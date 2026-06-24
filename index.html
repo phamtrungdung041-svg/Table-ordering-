@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=420, initial-scale=1">
+<title>Cơm Niêu Ngon</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --momo:#A50064;--momo-light:#f5e0ef;--momo-dark:#7a0049;
+  --gold:#C9A84C;--gold-light:#fdf6e3;
+  --white:#fff;--bg:#f8f4f6;--gray:#f0ecee;--gray2:#e0d8dc;
+  --text:#1a0010;--text2:#5a4055;--text3:#9a7a90;
+  --green:#1a7a3c;--green-bg:#e8f7ee;
+  --orange:#d45a00;--orange-bg:#fff3e8;
+  --red:#c0392b;--red-bg:#fdecea;
+  --blue:#1565c0;--blue-bg:#e8f0fe;
+  --radius:12px;--radius-sm:8px;--radius-xs:6px;
+}
+body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--text);max-width:420px;margin:0 auto;min-height:100vh;overflow-x:hidden}
+.screen{display:none;flex-direction:column;min-height:100vh;animation:fadeIn .25s ease}
+.screen.active{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
+/* HEADER */
+.header{background:var(--momo);color:#fff;padding:12px 16px;position:sticky;top:0;z-index:100}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.logo-row{display:flex;align-items:center;gap:8px}
+.logo-icon{width:32px;height:32px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.logo-icon svg{width:20px;height:20px}
+.brand{font-size:15px;font-weight:700;letter-spacing:.3px}
+.brand small{display:block;font-size:10px;font-weight:400;opacity:.85}
+.table-badge{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);padding:5px 12px;border-radius:20px;font-size:13px;font-weight:600;letter-spacing:.5px}
+
+/* SEARCH/FILTER ROW */
+.sf-row{display:flex;gap:8px;align-items:center}
+.search-wrap{flex:1;position:relative}
+.search-wrap input{width:100%;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:7px 12px 7px 34px;color:#fff;font-size:13px;font-family:inherit;outline:none}
+.search-wrap input::placeholder{color:rgba(255,255,255,.6)}
+.search-wrap .s-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:.7;font-size:15px}
+.filter-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:7px 12px;color:#fff;font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:4px;outline:none}
+.filter-dropdown{position:absolute;top:100%;right:16px;background:#fff;border-radius:var(--radius);box-shadow:0 4px 20px rgba(165,0,100,.2);z-index:200;min-width:180px;overflow:hidden;display:none}
+.filter-dropdown.open{display:block;animation:slideUp .2s ease}
+.filter-opt{padding:10px 16px;font-size:13px;cursor:pointer;color:var(--text);border-bottom:.5px solid var(--gray2)}
+.filter-opt:last-child{border:none}
+.filter-opt:hover,.filter-opt.active{background:var(--momo-light);color:var(--momo);font-weight:500}
+
+/* TABS */
+.tabs{background:#fff;border-bottom:1px solid var(--gray2);overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{background:none;border:none;padding:10px 14px;font-size:12px;font-family:inherit;color:var(--text3);cursor:pointer;border-bottom:2.5px solid transparent;font-weight:500;transition:all .2s}
+.tabs button.active{color:var(--momo);border-bottom-color:var(--momo);font-weight:600}
+
+/* MENU GRID */
+.menu-body{flex:1;overflow-y:auto;padding:12px;padding-bottom:80px}
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dish-card{background:#fff;border-radius:var(--radius);overflow:hidden;position:relative;cursor:pointer;transition:transform .15s;border:.5px solid var(--gray2)}
+.dish-card:active{transform:scale(.97)}
+.dish-img{width:100%;height:110px;object-fit:cover;background:var(--gray)}
+.dish-img-placeholder{width:100%;height:110px;display:flex;align-items:center;justify-content:center;font-size:36px;background:linear-gradient(135deg,#fef3e2,#fde8c8)}
+.dish-sold-out .dish-img-placeholder{filter:grayscale(.9);opacity:.5}
+.dish-sold-out .dish-overlay{position:absolute;top:0;left:0;right:0;height:110px;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;border-radius:var(--radius) var(--radius) 0 0}
+.dish-sold-out .dish-overlay span{background:rgba(0,0,0,.7);color:#fff;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;letter-spacing:.5px}
+.badge{position:absolute;top:8px;left:8px;font-size:9px;font-weight:700;padding:3px 7px;border-radius:10px;letter-spacing:.3px}
+.badge-hot{background:#ff4444;color:#fff}
+.badge-new{background:var(--gold);color:#fff}
+.dish-info{padding:8px 8px 10px}
+.dish-name{font-size:12px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:2px}
+.dish-desc{font-size:10px;color:var(--text3);line-height:1.4;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dish-footer{display:flex;align-items:center;justify-content:space-between}
+.dish-price{font-size:13px;font-weight:700;color:var(--momo)}
+.add-btn{width:28px;height:28px;background:var(--momo);border:none;border-radius:50%;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:transform .15s}
+.add-btn:active{transform:scale(.85)}
+.empty-search{text-align:center;padding:40px 20px;color:var(--text3)}
+
+/* CART BADGE */
+.cart-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:#fff;border-top:1px solid var(--gray2);z-index:100}
+.nav-bar{display:flex;justify-content:space-around;padding:8px 0 env(safe-area-inset-bottom,8px)}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:var(--radius-sm);transition:background .15s;position:relative;flex:1}
+.nav-item svg{width:22px;height:22px;stroke:var(--text3);stroke-width:1.8;fill:none}
+.nav-item.active svg{stroke:var(--momo)}
+.nav-item span{font-size:10px;color:var(--text3);font-weight:500}
+.nav-item.active span{color:var(--momo);font-weight:600}
+.cart-count{position:absolute;top:2px;right:14px;background:var(--momo);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px}
+
+/* MODAL DETAIL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex;animation:fadeIn .2s ease}
+.modal-sheet{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:420px;max-height:90vh;overflow-y:auto;padding-bottom:20px;animation:slideUp .25s ease}
+.modal-img{width:100%;height:200px;object-fit:cover;border-radius:20px 20px 0 0}
+.modal-img-ph{width:100%;height:200px;display:flex;align-items:center;justify-content:center;font-size:72px;background:linear-gradient(135deg,#fef3e2,#fde8c8);border-radius:20px 20px 0 0}
+.modal-body{padding:16px 20px}
+.modal-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.modal-price{font-size:20px;font-weight:700;color:var(--momo);margin-bottom:8px}
+.modal-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:4px}
+.modal-ingr{font-size:12px;color:var(--text3);margin-bottom:16px;font-style:italic}
+.section-label{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.opt-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.opt-chip{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;border:1.5px solid var(--gray2);cursor:pointer;transition:all .15s;color:var(--text2);background:#fff}
+.opt-chip.selected{border-color:var(--momo);background:var(--momo-light);color:var(--momo);font-weight:600}
+.cb-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:.5px solid var(--gray);cursor:pointer}
+.cb-item:last-child{border:none}
+.cb-box{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--gray2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cb-box.checked{background:var(--momo);border-color:var(--momo)}
+.cb-box.checked::after{content:'✓';color:#fff;font-size:12px;font-weight:700}
+.cb-label{font-size:13px;color:var(--text)}
+.cb-price{font-size:12px;color:var(--text3);margin-left:auto}
+textarea.note-input{width:100%;border:1.5px solid var(--gray2);border-radius:var(--radius-sm);padding:10px 12px;font-size:13px;font-family:inherit;color:var(--text);resize:none;outline:none;height:72px;background:#fff}
+textarea.note-input:focus{border-color:var(--momo)}
+.qty-row{display:flex;align-items:center;gap:16px;justify-content:center;margin:16px 0}
+.qty-btn{width:38px;height:38px;border-radius:50%;border:2px solid var(--momo);background:#fff;color:var(--momo);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700}
+.qty-btn:active{background:var(--momo-light)}
+.qty-num{font-size:22px;font-weight:700;min-width:32px;text-align:center}
+.modal-total{font-size:16px;font-weight:700;color:var(--momo);text-align:center;margin-bottom:16px}
+.btn-primary{width:100%;background:var(--momo);color:#fff;border:none;border-radius:var(--radius);padding:14px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.3px;transition:opacity .15s}
+.btn-primary:active{opacity:.85}
+.btn-outline{width:100%;background:#fff;color:var(--momo);border:2px solid var(--momo);border-radius:var(--radius);padding:12px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;margin-top:8px}
+.modal-close{position:absolute;top:16px;right:16px;width:32px;height:32px;background:rgba(0,0,0,.4);border-radius:50%;border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10}
+
+/* CART SCREEN */
+.screen-header{background:var(--momo);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.screen-header h1{font-size:17px;font-weight:700;flex:1}
+.back-btn{background:none;border:none;color:#fff;cursor:pointer;font-size:20px;padding:0}
+.cart-section{padding:12px 16px;margin-bottom:4px}
+.cart-section-title{font-size:13px;font-weight:700;color:var(--text2);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.cart-item{background:#fff;border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px;border:.5px solid var(--gray2);display:flex;gap:10px;align-items:flex-start}
+.cart-item-emoji{font-size:28px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--gold-light);border-radius:var(--radius-xs)}
+.cart-item-info{flex:1}
+.cart-item-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.cart-item-opts{font-size:11px;color:var(--text3);margin-bottom:4px}
+.cart-item-footer{display:flex;align-items:center;justify-content:space-between}
+.cart-item-price{font-size:13px;font-weight:700;color:var(--momo)}
+.cart-qty-row{display:flex;align-items:center;gap:8px}
+.cqb{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--momo);background:#fff;color:var(--momo);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700}
+.cqn{font-size:14px;font-weight:600;min-width:20px;text-align:center}
+.status-pill{font-size:10px;font-weight:600;padding:3px 8px;border-radius:10px;letter-spacing:.3px}
+.s-wait{background:#fff3e8;color:#d45a00}.s-recv{background:#e8f0fe;color:#1565c0}
+.s-cook{background:#fff8e1;color:#f57c00}.s-done{background:#e8f7ee;color:#1a7a3c}
+.s-deny{background:#fdecea;color:#c0392b}
+.summary-box{background:#fff;margin:12px 16px;border-radius:var(--radius);padding:14px;border:.5px solid var(--gray2)}
+.sum-row{display:flex;justify-content:space-between;font-size:13px;color:var(--text2);padding:4px 0;border-bottom:.5px solid var(--gray)}
+.sum-row:last-child{border:none}
+.sum-total{font-size:15px;font-weight:700;color:var(--momo);padding-top:8px}
+.action-group{padding:12px 16px 80px;display:flex;flex-direction:column;gap:8px}
+
+/* PROGRESS BAR */
+.progress-steps{display:flex;align-items:center;gap:0;margin:8px 0}
+.ps-step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative}
+.ps-dot{width:12px;height:12px;border-radius:50%;background:var(--gray2);z-index:1;transition:background .4s}
+.ps-dot.done{background:var(--green)}
+.ps-dot.active{background:var(--momo);animation:pulse 1.5s infinite}
+.ps-label{font-size:9px;color:var(--text3);margin-top:3px;text-align:center;line-height:1.2}
+.ps-line{position:absolute;top:6px;left:50%;width:100%;height:2px;background:var(--gray2);z-index:0}
+.ps-line.done{background:var(--green)}
+.ps-step:last-child .ps-line{display:none}
+
+/* ORDER SCREEN */
+.order-actions{display:flex;gap:8px;padding:10px 16px;overflow-x:auto;scrollbar-width:none}
+.order-actions::-webkit-scrollbar{display:none}
+.oa-btn{display:flex;flex-direction:column;align-items:center;gap:3px;background:#fff;border:.5px solid var(--gray2);border-radius:var(--radius-sm);padding:10px 14px;cursor:pointer;flex-shrink:0;min-width:76px;transition:all .15s}
+.oa-btn svg{width:22px;height:22px;stroke:var(--momo);stroke-width:1.8;fill:none}
+.oa-btn span{font-size:10px;color:var(--text2);font-weight:500;white-space:nowrap}
+.oa-btn:active{background:var(--momo-light)}
+.discount-row{display:flex;gap:8px;padding:0 16px;margin-bottom:8px}
+.discount-input{flex:1;border:1.5px solid var(--gray2);border-radius:var(--radius-sm);padding:9px 12px;font-size:13px;font-family:inherit;outline:none}
+.discount-input:focus{border-color:var(--momo)}
+.discount-btn{background:var(--momo);color:#fff;border:none;border-radius:var(--radius-sm);padding:9px 16px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer}
+.discount-badge{margin:0 16px 8px;background:var(--green-bg);color:var(--green);border-radius:var(--radius-sm);padding:8px 12px;font-size:12px;font-weight:600;display:none}
+.member-box{background:#fff;margin:0 16px 8px;border-radius:var(--radius-sm);padding:12px;border:.5px solid var(--gray2)}
+.member-row{display:flex;gap:8px;align-items:center}
+.member-input{flex:1;border:1.5px solid var(--gray2);border-radius:var(--radius-sm);padding:8px 12px;font-size:13px;font-family:inherit;outline:none}
+.member-input:focus{border-color:var(--momo)}
+.member-info{margin-top:10px;padding-top:10px;border-top:.5px solid var(--gray);display:none}
+.member-points{font-size:22px;font-weight:700;color:var(--momo)}
+.call-payment-btn{margin:0 16px 16px;background:var(--momo);color:#fff;border:none;border-radius:var(--radius);padding:14px;font-size:15px;font-weight:700;width:calc(100% - 32px);cursor:pointer;font-family:inherit;letter-spacing:.3px}
+
+/* PAYMENT SCREEN */
+.pay-method-list{padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.pay-method{background:#fff;border:1.5px solid var(--gray2);border-radius:var(--radius);padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .15s}
+.pay-method.selected{border-color:var(--momo);background:var(--momo-light)}
+.pay-method-icon{width:36px;height:36px;border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--gray)}
+.pay-method-info{flex:1}
+.pay-method-title{font-size:13px;font-weight:600;color:var(--text)}
+.pay-method-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.pay-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--gray2);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.pay-method.selected .pay-radio{border-color:var(--momo)}
+.pay-method.selected .pay-radio::after{content:'';width:8px;height:8px;background:var(--momo);border-radius:50%;display:block}
+.qr-box{margin:12px 16px;background:#fff;border-radius:var(--radius);border:.5px solid var(--gray2);padding:20px;text-align:center;display:none}
+.qr-box.show{display:block;animation:fadeIn .3s ease}
+.qr-img{width:160px;height:160px;margin:0 auto;border:2px solid var(--momo);border-radius:var(--radius-sm);padding:8px;background:#fff}
+.card-form{margin:12px 16px;background:#fff;border-radius:var(--radius);border:.5px solid var(--gray2);padding:16px;display:none}
+.card-form.show{display:block;animation:fadeIn .3s ease}
+.form-group{margin-bottom:12px}
+.form-label{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:5px;display:block}
+.form-input{width:100%;border:1.5px solid var(--gray2);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;font-family:inherit;outline:none;color:var(--text)}
+.form-input:focus{border-color:var(--momo)}
+.form-row{display:flex;gap:10px}
+.tip-section{padding:12px 16px}
+.tip-opts{display:flex;gap:8px;flex-wrap:wrap}
+.tip-chip{padding:8px 12px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;border:1.5px solid var(--gray2);cursor:pointer;background:#fff;color:var(--text2);transition:all .15s}
+.tip-chip.selected{background:var(--momo-light);border-color:var(--momo);color:var(--momo);font-weight:600}
+.tip-input{display:none;margin-top:10px}
+.tip-input input{width:100%;border:1.5px solid var(--momo);border-radius:var(--radius-sm);padding:8px 12px;font-size:14px;font-family:inherit;outline:none;color:var(--text)}
+.pay-total-box{margin:12px 16px;background:var(--momo-light);border-radius:var(--radius);padding:14px;border:.5px solid rgba(165,0,100,.15)}
+.pay-total-label{font-size:12px;color:var(--text2);margin-bottom:4px}
+.pay-total-amt{font-size:24px;font-weight:700;color:var(--momo)}
+
+/* SUCCESS POPUP */
+.popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:900;display:none;align-items:center;justify-content:center;padding:20px}
+.popup-overlay.open{display:flex;animation:fadeIn .25s ease}
+.popup-card{background:#fff;border-radius:20px;padding:24px;width:100%;max-width:340px;text-align:center}
+.popup-icon{font-size:56px;margin-bottom:12px}
+.popup-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:6px}
+.popup-sub{font-size:13px;color:var(--text2);margin-bottom:20px}
+.star-row{display:flex;justify-content:center;gap:8px;margin-bottom:14px}
+.star{font-size:32px;cursor:pointer;color:#ddd;transition:color .15s}
+.star.lit{color:#f5a623}
+.review-textarea{width:100%;border:1.5px solid var(--gray2);border-radius:var(--radius-sm);padding:10px;font-size:13px;font-family:inherit;outline:none;height:72px;resize:none;margin-bottom:12px}
+.review-textarea:focus{border-color:var(--momo)}
+
+/* WORKER POPUP */
+.worker-popup{background:#fff;border-radius:var(--radius);padding:20px;width:100%;max-width:340px}
+.worker-opts{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.worker-opt{padding:10px 14px;border-radius:var(--radius-sm);border:1.5px solid var(--gray2);cursor:pointer;font-size:13px;color:var(--text);transition:all .15s}
+.worker-opt.sel{background:var(--momo-light);border-color:var(--momo);color:var(--momo);font-weight:600}
+
+/* UTILS */
+.divider{height:.5px;background:var(--gray2);margin:4px 0}
+.tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:var(--momo-light);color:var(--momo)}
+.text-muted{color:var(--text3);font-size:12px}
+.section-divider{height:8px;background:var(--bg)}
+.pos-opt{background:#fff;border-radius:var(--radius-sm);border:.5px solid var(--gray2);padding:14px;margin:0 16px;display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:8px}
+.pos-opt svg{width:24px;height:24px;stroke:var(--momo);stroke-width:1.8;fill:none}
+.pos-opt-info{flex:1}
+.pos-opt-title{font-size:13px;font-weight:600;color:var(--text)}
+.pos-opt-sub{font-size:11px;color:var(--text3)}
+</style>
+</head>
+<body>
+
+<!-- SCREEN 1: MENU -->
+<div id="screen-menu" class="screen active">
+  <div class="header">
+    <div class="header-top">
+      <div class="logo-row">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#A50064" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 12c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4-4-1.8-4-4z"/></svg>
+        </div>
+        <div>
+          <div class="brand">Cơm Niêu Ngon<small>Nhà hàng ẩm thực Việt</small></div>
+        </div>
+      </div>
+      <div class="table-badge">🪑 Bàn 05</div>
+    </div>
+    <div class="sf-row" style="position:relative">
+      <div class="search-wrap">
+        <span class="s-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Tìm món ăn..." oninput="filterMenu()" />
+      </div>
+      <button class="filter-btn" onclick="toggleFilter()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+        Lọc
+      </button>
+      <div class="filter-dropdown" id="filterDropdown">
+        <div class="filter-opt active" onclick="selectFilter('all',this)">Tất cả</div>
+        <div class="filter-opt" onclick="selectFilter('combo',this)">Set combo</div>
+        <div class="filter-opt" onclick="selectFilter('com',this)">Món cơm</div>
+        <div class="filter-opt" onclick="selectFilter('ca',this)">Món cá</div>
+        <div class="filter-opt" onclick="selectFilter('thit',this)">Món thịt</div>
+        <div class="filter-opt" onclick="selectFilter('rau',this)">Món rau</div>
+        <div class="filter-opt" onclick="selectFilter('canh',this)">Món canh</div>
+        <div class="filter-opt" onclick="selectFilter('khac',this)">Món khác</div>
+        <div class="filter-opt" onclick="selectFilter('nuoc',this)">Nước uống</div>
+        <div class="filter-opt" onclick="selectFilter('trang',this)">Tráng miệng</div>
+      </div>
+    </div>
+  </div>
+  <div class="tabs" id="catTabs">
+    <button class="active" onclick="switchCat('all',this)">Tất cả</button>
+    <button onclick="switchCat('combo',this)">🎁 Set Combo</button>
+    <button onclick="switchCat('com',this)">🍚 Cơm</button>
+    <button onclick="switchCat('ca',this)">🐟 Cá</button>
+    <button onclick="switchCat('thit',this)">🥩 Thịt</button>
+    <button onclick="switchCat('rau',this)">🥬 Rau</button>
+    <button onclick="switchCat('canh',this)">🍲 Canh</button>
+    <button onclick="switchCat('nuoc',this)">🥤 Nước</button>
+    <button onclick="switchCat('trang',this)">🍮 Tráng miệng</button>
+  </div>
+  <div class="menu-body">
+    <div class="menu-grid" id="menuGrid"></div>
+    <div id="emptySearch" class="empty-search" style="display:none">
+      <div style="font-size:40px;margin-bottom:8px">🔍</div>
+      <div style="font-weight:600;color:var(--text2);margin-bottom:4px">Không tìm thấy món</div>
+      <div>Thử từ khóa khác nhé!</div>
+    </div>
+  </div>
+  <div class="cart-bar"><div class="nav-bar" id="navBar">
+    <div class="nav-item active" onclick="gotoScreen('menu')">
+      <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
+      <span>Thực đơn</span>
+    </div>
+    <div class="nav-item" onclick="gotoScreen('cart')">
+      <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.98-1.73l1.2-7.27H6"/></svg>
+      <span>Giỏ hàng</span>
+      <div class="cart-count" id="cartCount" style="display:none">0</div>
+    </div>
+    <div class="nav-item" onclick="gotoScreen('order')">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span>Đơn hàng</span>
+    </div>
+    <div class="nav-item" onclick="gotoScreen('payment')">
+      <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      <span>Thanh toán</span>
+    </div>
+  </div></div>
+</div>
+
+<!-- SCREEN 2: CART -->
+<div id="screen-cart" class="screen">
+  <div class="screen-header">
+    <button class="back-btn" onclick="gotoScreen('menu')">←</button>
+    <h1>🛒 Giỏ hàng</h1>
+    <div class="tag" id="cartTag">0 món</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding-bottom:80px">
+    <div class="cart-section">
+      <div class="cart-section-title">🟡 Món đang chọn <span id="pendingCount" style="background:var(--orange-bg);color:var(--orange);font-size:11px;padding:2px 7px;border-radius:10px">0 món</span></div>
+      <div id="pendingItems"></div>
+      <div id="emptyPending" style="text-align:center;padding:20px;color:var(--text3);font-size:13px">Chưa có món nào. Hãy thêm từ thực đơn!</div>
+    </div>
+    <div class="section-divider"></div>
+    <div class="cart-section">
+      <div class="cart-section-title">✅ Món đã đặt <span style="background:var(--green-bg);color:var(--green);font-size:11px;padding:2px 7px;border-radius:10px">2 món</span></div>
+      <div id="placedItems"></div>
+    </div>
+    <div class="section-divider"></div>
+    <div class="summary-box">
+      <div class="sum-row"><span>Tạm tính</span><span id="subtotal">0đ</span></div>
+      <div class="sum-row"><span>Phí phục vụ (5%)</span><span id="svcFee">0đ</span></div>
+      <div class="sum-row"><span>VAT (8%)</span><span id="vatFee">0đ</span></div>
+      <div class="sum-row sum-total"><span>Tổng cộng</span><span id="cartTotal">0đ</span></div>
+    </div>
+    <div class="action-group">
+      <button class="btn-primary" onclick="confirmOrder()">✅ Xác nhận đặt món</button>
+      <button class="btn-outline" onclick="gotoScreen('menu')">➕ Gọi thêm món</button>
+    </div>
+  </div>
+  <div class="cart-bar"><div class="nav-bar">
+    <div class="nav-item" onclick="gotoScreen('menu')"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg><span>Thực đơn</span></div>
+    <div class="nav-item active" onclick="gotoScreen('cart')"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.98-1.73l1.2-7.27H6"/></svg><span>Giỏ hàng</span></div>
+    <div class="nav-item" onclick="gotoScreen('order')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>Đơn hàng</span></div>
+    <div class="nav-item" onclick="gotoScreen('payment')"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span>Thanh toán</span></div>
+  </div></div>
+</div>
+
+<!-- SCREEN 3: ORDER -->
+<div id="screen-order" class="screen">
+  <div class="screen-header">
+    <button class="back-btn" onclick="gotoScreen('menu')">←</button>
+    <h1>📋 Đơn hàng</h1>
+    <div class="tag">Bàn 05</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding-bottom:80px">
+    <div class="order-actions">
+      <div class="oa-btn" onclick="showWorkerPopup()">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Gọi nhân viên</span>
+      </div>
+      <div class="oa-btn" onclick="showReviewPopup()">
+        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <span>Đánh giá</span>
+      </div>
+      <div class="oa-btn" onclick="showMemberBox()">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Thành viên</span>
+      </div>
+      <div class="oa-btn" onclick="gotoScreen('payment')">
+        <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        <span>Thanh toán</span>
+      </div>
+    </div>
+    <div class="section-divider"></div>
+    <div id="memberBox" style="display:none">
+      <div class="member-box">
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px">👤 Thành viên</div>
+        <div class="member-row">
+          <input class="member-input" type="tel" id="memberPhone" placeholder="Nhập số điện thoại..." />
+          <button onclick="lookupMember()" style="background:var(--momo);color:#fff;border:none;border-radius:var(--radius-sm);padding:8px 14px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">Tra cứu</button>
+        </div>
+        <div class="member-info" id="memberInfo">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="font-size:13px;color:var(--text2)">Xin chào, <strong id="memberName">Nguyễn Văn A</strong></div>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:4px;margin-top:4px">
+            <span class="member-points" id="memberPoints">2.400</span>
+            <span style="font-size:12px;color:var(--text3)">điểm tích lũy</span>
+          </div>
+        </div>
+      </div>
+      <div class="section-divider"></div>
+    </div>
+    <div style="padding:0 16px;margin-bottom:8px">
+      <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px">🎟️ Mã giảm giá</div>
+    </div>
+    <div class="discount-row">
+      <input class="discount-input" type="text" id="discountCode" placeholder="Nhập mã giảm giá..." />
+      <button class="discount-btn" onclick="applyDiscount()">Áp dụng</button>
+    </div>
+    <div class="discount-badge" id="discountBadge">✓ Mã giảm giá đã áp dụng</div>
+    <div class="section-divider"></div>
+    <div class="cart-section">
+      <div class="cart-section-title">📦 Tiến độ món ăn</div>
+      <div id="orderItems"></div>
+    </div>
+    <div class="section-divider"></div>
+    <div class="summary-box" style="margin:12px 16px">
+      <div class="sum-row"><span>Tạm tính</span><span id="orderSubtotal">0đ</span></div>
+      <div class="sum-row"><span>Phí phục vụ (5%)</span><span id="orderSvc">0đ</span></div>
+      <div class="sum-row"><span>VAT (8%)</span><span id="orderVat">0đ</span></div>
+      <div class="sum-row" id="discountRow" style="display:none"><span>Giảm giá</span><span id="discountAmt" style="color:var(--green)">-0đ</span></div>
+      <div class="sum-row sum-total"><span>Tổng cộng</span><span id="orderTotal">0đ</span></div>
+    </div>
+    <div style="padding:0 16px 80px">
+      <button class="call-payment-btn" onclick="gotoScreen('payment')">💳 Gọi thanh toán</button>
+    </div>
+  </div>
+  <div class="cart-bar"><div class="nav-bar">
+    <div class="nav-item" onclick="gotoScreen('menu')"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg><span>Thực đơn</span></div>
+    <div class="nav-item" onclick="gotoScreen('cart')"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.98-1.73l1.2-7.27H6"/></svg><span>Giỏ hàng</span><div class="cart-count" id="cartCount2" style="display:none">0</div></div>
+    <div class="nav-item active" onclick="gotoScreen('order')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>Đơn hàng</span></div>
+    <div class="nav-item" onclick="gotoScreen('payment')"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span>Thanh toán</span></div>
+  </div></div>
+</div>
+
+<!-- SCREEN 4: PAYMENT -->
+<div id="screen-payment" class="screen">
+  <div class="screen-header">
+    <button class="back-btn" onclick="gotoScreen('order')">←</button>
+    <h1>💳 Thanh toán</h1>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding-bottom:80px">
+    <div class="pay-total-box">
+      <div class="pay-total-label">Tổng tiền thanh toán</div>
+      <div class="pay-total-amt" id="payTotalAmt">1.078.000đ</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:2px">Đã bao gồm VAT & phí phục vụ</div>
+    </div>
+    <div style="padding:0 16px;margin-bottom:4px">
+      <div style="font-size:12px;font-weight:700;color:var(--text2)">💡 Phương thức thanh toán</div>
+    </div>
+    <div class="pay-method-list">
+      <div class="pay-method" onclick="selectPayMethod('cash',this)">
+        <div class="pay-method-icon">💵</div>
+        <div class="pay-method-info">
+          <div class="pay-method-title">Tiền mặt</div>
+          <div class="pay-method-sub">Vui lòng đợi nhân viên đến thu</div>
+        </div>
+        <div class="pay-radio"></div>
+      </div>
+      <div class="pay-method selected" onclick="selectPayMethod('transfer',this)">
+        <div class="pay-method-icon">📱</div>
+        <div class="pay-method-info">
+          <div class="pay-method-title">Chuyển khoản / Ví điện tử</div>
+          <div class="pay-method-sub">MoMo · ZaloPay · Ngân hàng</div>
+        </div>
+        <div class="pay-radio"><div style="width:8px;height:8px;background:var(--momo);border-radius:50%"></div></div>
+      </div>
+      <div class="pay-method" onclick="selectPayMethod('card',this)">
+        <div class="pay-method-icon">💳</div>
+        <div class="pay-method-info">
+          <div class="pay-method-title">Thẻ ngân hàng</div>
+          <div class="pay-method-sub">Visa · MasterCard · JCB · Napas</div>
+        </div>
+        <div class="pay-radio"></div>
+      </div>
+    </div>
+    <div class="qr-box show" id="qrBox">
+      <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:12px">Quét mã để thanh toán</div>
+      <div class="qr-img">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="144" height="144">
+          <rect x="5" y="5" width="35" height="35" rx="3" fill="none" stroke="#A50064" stroke-width="3"/>
+          <rect x="12" y="12" width="21" height="21" fill="#A50064" rx="2"/>
+          <rect x="60" y="5" width="35" height="35" rx="3" fill="none" stroke="#A50064" stroke-width="3"/>
+          <rect x="67" y="12" width="21" height="21" fill="#A50064" rx="2"/>
+          <rect x="5" y="60" width="35" height="35" rx="3" fill="none" stroke="#A50064" stroke-width="3"/>
+          <rect x="12" y="67" width="21" height="21" fill="#A50064" rx="2"/>
+          <rect x="45" y="5" width="6" height="6" fill="#A50064"/>
+          <rect x="51" y="11" width="6" height="6" fill="#A50064"/>
+          <rect x="45" y="17" width="6" height="6" fill="#A50064"/>
+          <rect x="51" y="23" width="6" height="6" fill="#A50064"/>
+          <rect x="45" y="29" width="6" height="6" fill="#A50064"/>
+          <rect x="45" y="45" width="6" height="6" fill="#A50064"/>
+          <rect x="51" y="51" width="6" height="6" fill="#A50064"/>
+          <rect x="57" y="45" width="6" height="6" fill="#A50064"/>
+          <rect x="63" y="51" width="6" height="6" fill="#A50064"/>
+          <rect x="69" y="45" width="6" height="6" fill="#A50064"/>
+          <rect x="75" y="51" width="6" height="6" fill="#A50064"/>
+          <rect x="81" y="45" width="6" height="6" fill="#A50064"/>
+          <rect x="87" y="51" width="6" height="6" fill="#A50064"/>
+          <rect x="93" y="45" width="6" height="6" fill="#A50064"/>
+          <rect x="45" y="57" width="6" height="6" fill="#A50064"/>
+          <rect x="51" y="63" width="6" height="6" fill="#A50064"/>
+          <rect x="57" y="57" width="6" height="6" fill="#A50064"/>
+          <rect x="63" y="63" width="6" height="6" fill="#A50064"/>
+          <rect x="69" y="57" width="6" height="6" fill="#A50064"/>
+          <rect x="75" y="63" width="6" height="6" fill="#A50064"/>
+          <rect x="81" y="57" width="6" height="6" fill="#A50064"/>
+          <rect x="57" y="69" width="6" height="6" fill="#A50064"/>
+          <rect x="63" y="75" width="6" height="6" fill="#A50064"/>
+          <rect x="69" y="69" width="6" height="6" fill="#A50064"/>
+          <rect x="75" y="75" width="6" height="6" fill="#A50064"/>
+          <rect x="81" y="69" width="6" height="6" fill="#A50064"/>
+          <rect x="87" y="75" width="6" height="6" fill="#A50064"/>
+          <rect x="93" y="69" width="6" height="6" fill="#A50064"/>
+          <rect x="87" y="81" width="6" height="6" fill="#A50064"/>
+          <rect x="93" y="87" width="6" height="6" fill="#A50064"/>
+          <rect x="45" y="81" width="6" height="6" fill="#A50064"/>
+          <rect x="51" y="87" width="6" height="6" fill="#A50064"/>
+          <rect x="57" y="81" width="6" height="6" fill="#A50064"/>
+          <rect x="63" y="87" width="6" height="6" fill="#A50064"/>
+          <rect x="69" y="81" width="6" height="6" fill="#A50064"/>
+          <rect x="75" y="87" width="6" height="6" fill="#A50064"/>
+        </svg>
+      </div>
+      <div style="margin-top:10px;font-size:12px;color:var(--text2)">Ngân hàng: <strong>Vietcombank</strong></div>
+      <div style="font-size:12px;color:var(--text2)">STK: <strong style="color:var(--momo)">1234 5678 9012</strong></div>
+      <div style="font-size:12px;color:var(--text2)">Nội dung: <strong>COM05 1078000</strong></div>
+    </div>
+    <div class="card-form" id="cardForm">
+      <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:12px">Thông tin thẻ</div>
+      <div class="form-group">
+        <label class="form-label">SỐ THẺ</label>
+        <input class="form-input" placeholder="1234 5678 9012 3456" maxlength="19" />
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="flex:1">
+          <label class="form-label">NGÀY HẾT HẠN</label>
+          <input class="form-input" placeholder="MM/YY" maxlength="5" />
+        </div>
+        <div class="form-group" style="flex:1">
+          <label class="form-label">CVV/CVC</label>
+          <input class="form-input" placeholder="123" maxlength="4" type="password" />
+        </div>
+      </div>
+      <div class="divider" style="margin:4px 0 14px"></div>
+      <div class="pos-opt">
+        <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        <div class="pos-opt-info">
+          <div class="pos-opt-title">Thanh toán qua máy POS/EDC</div>
+          <div class="pos-opt-sub">Nhân viên sẽ mang máy POS đến bàn</div>
+        </div>
+        <svg viewBox="0 0 24 24" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+    <div class="tip-section">
+      <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px">🙏 Tiền tip (không bắt buộc)</div>
+      <div class="tip-opts" id="tipOpts">
+        <div class="tip-chip" onclick="selectTip(0,this)">Không có</div>
+        <div class="tip-chip" onclick="selectTip(5,this)">5% · ~50.000đ</div>
+        <div class="tip-chip" onclick="selectTip(10,this)">10% · ~100.000đ</div>
+        <div class="tip-chip" onclick="selectTip(-1,this)">Khác</div>
+      </div>
+      <div class="tip-input" id="tipCustom">
+        <input type="number" id="tipCustomAmt" placeholder="Nhập số tiền tip..." oninput="updatePayTotal()" style="border:1.5px solid var(--momo);border-radius:var(--radius-sm);padding:8px 12px;font-size:14px;font-family:inherit;outline:none;width:100%;color:var(--text)"/>
+      </div>
+    </div>
+    <div class="pay-total-box" style="margin:0 16px">
+      <div class="pay-total-label">Tổng thanh toán (bao gồm tip)</div>
+      <div class="pay-total-amt" id="finalPayAmt">1.078.000đ</div>
+    </div>
+    <div style="padding:12px 16px 80px">
+      <button class="btn-primary" onclick="confirmPayment()" style="font-size:15px">✅ Xác nhận thanh toán</button>
+    </div>
+  </div>
+  <div class="cart-bar"><div class="nav-bar">
+    <div class="nav-item" onclick="gotoScreen('menu')"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg><span>Thực đơn</span></div>
+    <div class="nav-item" onclick="gotoScreen('cart')"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.98-1.73l1.2-7.27H6"/></svg><span>Giỏ hàng</span></div>
+    <div class="nav-item" onclick="gotoScreen('order')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>Đơn hàng</span></div>
+    <div class="nav-item active" onclick="gotoScreen('payment')"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span>Thanh toán</span></div>
+  </div></div>
+</div>
+
+<!-- MODAL: Dish Detail -->
+<div class="modal-overlay" id="dishModal" onclick="closeDishModal(event)">
+  <div class="modal-sheet" id="dishModalContent">
+    <div style="position:relative">
+      <div class="modal-img-ph" id="modalImgPh">🍽️</div>
+      <button class="modal-close" onclick="closeDishModalBtn()">✕</button>
+      <div id="modalBadge" style="position:absolute;bottom:12px;left:12px"></div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-title" id="modalTitle">Tên món</div>
+      <div class="modal-price" id="modalPrice">0đ</div>
+      <div class="modal-desc" id="modalDesc">Mô tả</div>
+      <div class="modal-ingr" id="modalIngr"></div>
+      <div class="section-label">Mức độ</div>
+      <div class="opt-row" id="spiceOpts">
+        <div class="opt-chip selected" onclick="selectOpt(this,'spice')">Không cay</div>
+        <div class="opt-chip" onclick="selectOpt(this,'spice')">Cay ít 🌶</div>
+        <div class="opt-chip" onclick="selectOpt(this,'spice')">Cay nhiều 🌶🌶</div>
+      </div>
+      <div class="section-label">Tùy chọn</div>
+      <div class="opt-row" id="extraOpts">
+        <div class="opt-chip selected" onclick="toggleOpt(this)">Có hành</div>
+        <div class="opt-chip selected" onclick="toggleOpt(this)">Lên ngay</div>
+      </div>
+      <div class="section-label">Món ăn kèm</div>
+      <div id="sideItems">
+        <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box checked"></div><div class="cb-label">Cà pháo muối</div><div class="cb-price">+10.000đ</div></div>
+        <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box"></div><div class="cb-label">Dưa cải chua</div><div class="cb-price">+10.000đ</div></div>
+        <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box"></div><div class="cb-label">Thêm thịt ba chỉ</div><div class="cb-price">+25.000đ</div></div>
+        <div class="cb-item" onclick="toggleCb(this)"><div class="cb-box"></div><div class="cb-label">Trứng ốp la</div><div class="cb-price">+15.000đ</div></div>
+      </div>
+      <div style="margin-top:14px;margin-bottom:8px" class="section-label">Ghi chú cho bếp</div>
+      <textarea class="note-input" id="dishNote" placeholder="Vd: chín vừa, để nước mắm riêng, không cho đường..."></textarea>
+      <div class="qty-row">
+        <button class="qty-btn" onclick="changeQty(-1)">−</button>
+        <div class="qty-num" id="modalQty">1</div>
+        <button class="qty-btn" onclick="changeQty(1)">+</button>
+      </div>
+      <div class="modal-total" id="modalTotal">Thành tiền: 89.000đ</div>
+      <button class="btn-primary" onclick="addToCart()">🛒 Thêm vào giỏ hàng</button>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP: Worker -->
+<div class="popup-overlay" id="workerOverlay" onclick="closeWorkerPopup(event)">
+  <div class="worker-popup">
+    <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px">📣 Gọi nhân viên</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:2px">Chọn lý do:</div>
+    <div class="worker-opts" id="workerOpts">
+      <div class="worker-opt" onclick="selWorker(this)">📄 Thêm giấy ăn / khăn ướt</div>
+      <div class="worker-opt" onclick="selWorker(this)">🍜 Thêm nước chấm / gia vị</div>
+      <div class="worker-opt" onclick="selWorker(this)">🗑️ Dọn bàn / thu dọn bát đĩa</div>
+      <div class="worker-opt" onclick="selWorker(this)">🍽️ Thêm bát đĩa / đũa muỗng</div>
+      <div class="worker-opt" onclick="selWorker(this)">❓ Lý do khác</div>
+    </div>
+    <textarea class="note-input" id="workerNote" placeholder="Ghi chú thêm (nếu có)..." style="height:56px;margin-bottom:12px"></textarea>
+    <button class="btn-primary" onclick="sendWorker()">📲 Gửi yêu cầu</button>
+    <button class="btn-outline" onclick="document.getElementById('workerOverlay').classList.remove('open')">Hủy</button>
+  </div>
+</div>
+
+<!-- POPUP: Review -->
+<div class="popup-overlay" id="reviewOverlay" onclick="closeReviewPopup(event)">
+  <div class="popup-card">
+    <div class="popup-icon">⭐</div>
+    <div class="popup-title">Đánh giá trải nghiệm</div>
+    <div class="popup-sub">Chia sẻ cảm nhận của bạn về món ăn & dịch vụ</div>
+    <div class="star-row" id="starRow">
+      <span class="star" onclick="rateStar(1)">★</span>
+      <span class="star" onclick="rateStar(2)">★</span>
+      <span class="star" onclick="rateStar(3)">★</span>
+      <span class="star" onclick="rateStar(4)">★</span>
+      <span class="star lit" onclick="rateStar(5)">★</span>
+    </div>
+    <textarea class="review-textarea" placeholder="Món ăn ngon, phục vụ nhiệt tình..."></textarea>
+    <button class="btn-primary" onclick="submitReview()">Gửi đánh giá</button>
+    <button class="btn-outline" onclick="document.getElementById('reviewOverlay').classList.remove('open')">Bỏ qua</button>
+  </div>
+</div>
+
+<!-- POPUP: Success -->
+<div class="popup-overlay" id="successOverlay">
+  <div class="popup-card">
+    <div class="popup-icon">🎉</div>
+    <div class="popup-title">Thanh toán thành công!</div>
+    <div class="popup-sub">Cảm ơn bạn đã dùng bữa tại<br><strong>Nhà hàng Cơm Niêu Ngon</strong></div>
+    <div style="background:var(--green-bg);border-radius:var(--radius-sm);padding:10px;margin-bottom:16px;font-size:13px;color:var(--green);font-weight:600">
+      ✓ Đã thanh toán · Tích +108 điểm thành viên
+    </div>
+    <button class="btn-primary" onclick="openFinalReview()">⭐ Để lại đánh giá</button>
+    <button class="btn-outline" onclick="document.getElementById('successOverlay').classList.remove('open')">Đóng</button>
+  </div>
+</div>
+
+<script>
+const fmt = n => n.toLocaleString('vi-VN')+'đ';
+
+const dishes = [
+  {id:1,name:'Set Combo Gia Đình 4 người',cat:'combo',price:320000,emoji:'🎁',badge:'hot',desc:'Bộ combo đầy đủ cho gia đình 4 người, tiết kiệm 15% so với gọi lẻ.',ingr:'Cơm niêu x4, canh chua cá lóc, thịt kho tàu, rau muống xào tỏi, tráng miệng chè đậu xanh',soldOut:false},
+  {id:2,name:'Set Combo Đôi Lứa',cat:'combo',price:185000,emoji:'💑',badge:'new',desc:'Lý tưởng cho 2 người, gồm 2 suất cơm và 1 món canh.',ingr:'Cơm niêu x2, canh khổ qua nhồi thịt, cá kho tộ, dưa leo',soldOut:false},
+  {id:3,name:'Cơm Niêu Truyền Thống',cat:'com',price:65000,emoji:'🍚',badge:'hot',desc:'Cơm nấu trong niêu đất, cơm dẻo thơm với lớp cơm cháy vàng giòn đặc trưng.',ingr:'Gạo Nàng Hoa, nước, muối hạt',soldOut:false},
+  {id:4,name:'Cơm Chiên Phủ Trứng',cat:'com',price:75000,emoji:'🍳',badge:null,desc:'Cơm chiên xào với tôm tươi, bắp ngọt, cà rốt, phủ trứng tráng mỏng.',ingr:'Cơm trắng, tôm, trứng gà, bắp, cà rốt, hành lá, tỏi, dầu ăn',soldOut:false},
+  {id:5,name:'Cơm Niêu Sườn Non',cat:'com',price:89000,emoji:'🍖',badge:'hot',desc:'Sườn non hầm mềm, thấm vị, ăn kèm cơm niêu thơm dẻo.',ingr:'Sườn non heo, cà rốt, khoai tây, gừng, ngũ vị hương',soldOut:false},
+  {id:6,name:'Cá Kho Tộ Kiểu Nam Bộ',cat:'ca',price:95000,emoji:'🐟',badge:'hot',desc:'Cá basa kho trong tộ đất, đậm vị nước màu, thơm gừng và tiêu.',ingr:'Cá basa, nước màu dừa, gừng, hành, tiêu, ớt, đường, nước mắm',soldOut:false},
+  {id:7,name:'Cá Lóc Hấp Bầu',cat:'ca',price:115000,emoji:'🐠',badge:null,desc:'Cá lóc tươi hấp với bầu non, thanh mát, giữ nguyên vị ngọt tự nhiên.',ingr:'Cá lóc, bầu non, gừng, sả, hành lá, nước mắm chanh',soldOut:false},
+  {id:8,name:'Cá Trê Chiên Giòn',cat:'ca',price:88000,emoji:'🐡',badge:null,desc:'Cá trê tươi chiên giòn vàng ươm, ăn kèm rau sống và nước chấm chua ngọt.',ingr:'Cá trê, bột chiên giòn, tỏi, sả, muối, tiêu',soldOut:true},
+  {id:9,name:'Thịt Kho Tàu',cat:'thit',price:75000,emoji:'🥩',badge:'hot',desc:'Thịt ba chỉ kho cùng trứng vịt trong nước dừa tươi, màu nâu cánh gián hấp dẫn.',ingr:'Thịt ba chỉ heo, trứng vịt, nước dừa, nước màu, tỏi, gừng, đường, nước mắm',soldOut:false},
+  {id:10,name:'Sườn Nướng Mắm Sả',cat:'thit',price:110000,emoji:'🍗',badge:null,desc:'Sườn non tươi ướp mắm sả, nướng than hoa, thơm lừng khói.',ingr:'Sườn non heo, mắm, sả, tỏi, ớt, dầu hào, mật ong',soldOut:false},
+  {id:11,name:'Rau Muống Xào Tỏi',cat:'rau',price:35000,emoji:'🥬',badge:null,desc:'Rau muống non xào tỏi phi thơm, giòn ngọt tự nhiên.',ingr:'Rau muống, tỏi, dầu ăn, muối, nước mắm, đường',soldOut:false},
+  {id:12,name:'Bông Bí Xào Tỏi',cat:'rau',price:40000,emoji:'🌸',badge:null,desc:'Bông bí vàng xào tỏi nhẹ, giòn mềm, hương thơm đặc trưng.',ingr:'Bông bí, tỏi, dầu ăn, muối, hành lá',soldOut:false},
+  {id:13,name:'Canh Chua Cá Lóc',cat:'canh',price:85000,emoji:'🍲',badge:'hot',desc:'Canh chua truyền thống miền Nam với cà chua, thơm, đậu bắp, giá và cá lóc đồng.',ingr:'Cá lóc, cà chua, thơm, đậu bắp, giá đỗ, ngò om, me, đường, muối',soldOut:false},
+  {id:14,name:'Canh Khổ Qua Nhồi Thịt',cat:'canh',price:65000,emoji:'🫑',badge:null,desc:'Khổ qua nhồi thịt heo xay, nấu với nước xương trong vắt, thanh mát.',ingr:'Khổ qua, thịt heo xay, miến, nấm mèo, hành, tiêu, nước xương',soldOut:false},
+  {id:15,name:'Nước Dừa Tươi',cat:'nuoc',price:25000,emoji:'🥥',badge:null,desc:'Nước dừa tươi nguyên trái, ngọt mát tự nhiên.',ingr:'Dừa Bến Tre tươi',soldOut:false},
+  {id:16,name:'Nước Chanh Muối',cat:'nuoc',price:25000,emoji:'🍋',badge:null,desc:'Chanh muối sả, vừa chua vừa mặn dịu, rất hợp với đồ ăn mặn.',ingr:'Chanh tươi, muối hột, đường, sả, đá',soldOut:false},
+  {id:17,name:'Trà Tắc Đường Đen',cat:'nuoc',price:30000,emoji:'🧃',badge:'new',desc:'Trà thanh lọc kết hợp tắc và đường đen thơm, uống lạnh rất sảng khoái.',ingr:'Trà xanh, tắc, đường đen, đá viên',soldOut:false},
+  {id:18,name:'Chè Đậu Xanh Cốt Dừa',cat:'trang',price:30000,emoji:'🍮',badge:null,desc:'Chè đậu xanh nấu mềm, chan cốt dừa thơm béo, ăn nóng hoặc lạnh đều ngon.',ingr:'Đậu xanh bóc vỏ, nước cốt dừa, đường cát, muối, lá dứa',soldOut:false},
+  {id:19,name:'Bánh Chuối Nướng',cat:'trang',price:28000,emoji:'🍌',badge:null,desc:'Chuối chín nướng giòn thơm, phết bơ sữa và dừa nạo.',ingr:'Chuối xiêm chín, bơ, sữa đặc, dừa nạo, lá chuối',soldOut:false},
+];
+
+let cart = [];
+let currentDish = null;
+let currentQty = 1;
+let filterCat = 'all';
+let searchTerm = '';
+let discountVal = 0;
+let tipAmt = 0;
+let tipMode = 0;
+
+const placedOrders = [
+  {name:'Canh Chua Cá Lóc',price:85000,qty:1,status:'cook',emoji:'🍲',opts:'Không cay · Có hành',time:'14:32'},
+  {name:'Cơm Niêu Truyền Thống',price:65000,qty:2,status:'done',emoji:'🍚',opts:'Lên ngay',time:'14:30'},
+];
+
+function gotoScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  if(name==='cart') renderCart();
+  if(name==='order') renderOrder();
+  if(name==='payment') renderPayment();
+}
+
+function renderMenuGrid(){
+  const grid = document.getElementById('menuGrid');
+  const empty = document.getElementById('emptySearch');
+  const filtered = dishes.filter(d=>{
+    const matchCat = filterCat==='all' || d.cat===filterCat;
+    const matchSearch = searchTerm==='' || d.name.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchCat && matchSearch;
+  });
+  if(!filtered.length){grid.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  grid.innerHTML = filtered.map(d=>`
+    <div class="dish-card${d.soldOut?' dish-sold-out':''}" onclick="${d.soldOut?'':('openDish('+d.id+')')}">
+      ${d.badge?`<div class="badge badge-${d.badge}">${d.badge==='hot'?'🔥 Bán chạy':'✨ Mới'}</div>`:''}
+      ${d.soldOut?`<div class="dish-overlay"><span>Hết món</span></div>`:''}
+      <div class="dish-img-placeholder" style="${d.soldOut?'filter:grayscale(.85);opacity:.5':''}">${d.emoji}</div>
+      <div class="dish-info">
+        <div class="dish-name">${d.name}</div>
+        <div class="dish-desc">${d.desc}</div>
+        <div class="dish-footer">
+          <div class="dish-price">${fmt(d.price)}</div>
+          ${d.soldOut?`<div style="font-size:10px;color:var(--text3);font-weight:600">Hết</div>`:`<button class="add-btn" onclick="event.stopPropagation();quickAdd(${d.id})">+</button>`}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function filterMenu(){
+  searchTerm = document.getElementById('searchInput').value;
+  renderMenuGrid();
+}
+
+function switchCat(cat, el){
+  filterCat = cat;
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('searchInput').value='';
+  searchTerm='';
+  renderMenuGrid();
+}
+
+function selectFilter(cat, el){
+  filterCat = cat;
+  document.querySelectorAll('.filter-opt').forEach(o=>o.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('filterDropdown').classList.remove('open');
+  renderMenuGrid();
+}
+
+function toggleFilter(){
+  document.getElementById('filterDropdown').classList.toggle('open');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.sf-row')) document.getElementById('filterDropdown').classList.remove('open');
+});
+
+function openDish(id){
+  currentDish = dishes.find(d=>d.id===id);
+  currentQty = 1;
+  document.getElementById('modalTitle').textContent = currentDish.name;
+  document.getElementById('modalPrice').textContent = fmt(currentDish.price);
+  document.getElementById('modalDesc').textContent = currentDish.desc;
+  document.getElementById('modalIngr').textContent = '🧾 Thành phần: '+currentDish.ingr;
+  document.getElementById('modalImgPh').textContent = currentDish.emoji;
+  document.getElementById('modalImgPh').style.fontSize = '72px';
+  document.getElementById('modalQty').textContent = '1';
+  document.getElementById('dishNote').value = '';
+  document.getElementById('modalTotal').textContent = 'Thành tiền: '+fmt(currentDish.price);
+  const badge = document.getElementById('modalBadge');
+  badge.innerHTML = currentDish.badge?`<div class="badge badge-${currentDish.badge}" style="font-size:11px;padding:4px 10px">${currentDish.badge==='hot'?'🔥 Bán chạy':'✨ Mới'}</div>`:'';
+  document.querySelectorAll('#spiceOpts .opt-chip').forEach((c,i)=>{c.classList.toggle('selected',i===0)});
+  document.querySelectorAll('#extraOpts .opt-chip').forEach((c,i)=>{c.classList.toggle('selected',i<=1)});
+  document.querySelectorAll('#sideItems .cb-box').forEach((b,i)=>{b.classList.toggle('checked',i===0)});
+  document.getElementById('dishModal').classList.add('open');
+}
+
+function closeDishModal(e){if(e.target===document.getElementById('dishModal')) closeDishModalBtn();}
+function closeDishModalBtn(){document.getElementById('dishModal').classList.remove('open');}
+
+function changeQty(d){
+  currentQty = Math.max(1, currentQty+d);
+  document.getElementById('modalQty').textContent = currentQty;
+  const base = currentDish.price * currentQty;
+  let extra = 0;
+  document.querySelectorAll('#sideItems .cb-box.checked').forEach((b,i)=>{
+    const prices=[10000,10000,25000,15000];
+    extra+=prices[i]||0;
+  });
+  document.getElementById('modalTotal').textContent = 'Thành tiền: '+fmt(base+extra*currentQty);
+}
+
+function selectOpt(el, group){
+  el.closest('.opt-row').querySelectorAll('.opt-chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function toggleOpt(el){el.classList.toggle('selected');}
+function toggleCb(el){
+  const box = el.querySelector('.cb-box');
+  box.classList.toggle('checked');
+  changeQty(0);
+}
+
+function quickAdd(id){
+  const d = dishes.find(x=>x.id===id);
+  const existing = cart.find(c=>c.id===id);
+  if(existing){existing.qty++;}
+  else{cart.push({...d,qty:1,opts:'Không cay · Có hành',note:''});}
+  updateCartBadge();
+  animateAdd();
+}
+
+function addToCart(){
+  const spice = document.querySelector('#spiceOpts .opt-chip.selected')?.textContent||'Không cay';
+  const extras = [...document.querySelectorAll('#extraOpts .opt-chip.selected')].map(e=>e.textContent).join(' · ');
+  const note = document.getElementById('dishNote').value;
+  const sides = [...document.querySelectorAll('#sideItems .cb-item')].filter(i=>i.querySelector('.cb-box.checked')).map(i=>i.querySelector('.cb-label').textContent);
+  const existing = cart.find(c=>c.id===currentDish.id);
+  if(existing){existing.qty+=currentQty;} else {cart.push({...currentDish,qty:currentQty,opts:spice+(extras?' · '+extras:''),note,sides});}
+  updateCartBadge();
+  closeDishModalBtn();
+  animateAdd();
+}
+
+function animateAdd(){
+  const btn = document.querySelector('.nav-item:nth-child(2)');
+  btn.style.transform='scale(1.2)';
+  setTimeout(()=>btn.style.transform='',200);
+}
+
+function updateCartBadge(){
+  const total = cart.reduce((a,c)=>a+c.qty,0);
+  ['cartCount','cartCount2'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.textContent=total;el.style.display=total?'flex':'none';}
+  });
+  document.getElementById('cartTag').textContent = total+' món';
+}
+
+function renderCart(){
+  const pending = document.getElementById('pendingItems');
+  const empty = document.getElementById('emptyPending');
+  const pc = document.getElementById('pendingCount');
+  pc.textContent = cart.reduce((a,c)=>a+c.qty,0)+' món';
+  if(!cart.length){pending.innerHTML='';empty.style.display='block';}
+  else{
+    empty.style.display='none';
+    pending.innerHTML = cart.map((item,i)=>`
+      <div class="cart-item">
+        <div class="cart-item-emoji">${item.emoji}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-opts">${item.opts||''}</div>
+          <div class="cart-item-footer">
+            <div class="cart-item-price">${fmt(item.price*item.qty)}</div>
+            <div class="cart-qty-row">
+              <button class="cqb" onclick="cartQty(${i},-1)">−</button>
+              <div class="cqn">${item.qty}</div>
+              <button class="cqb" onclick="cartQty(${i},1)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+  document.getElementById('placedItems').innerHTML = placedOrders.map(o=>`
+    <div class="cart-item">
+      <div class="cart-item-emoji">${o.emoji}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${o.name} × ${o.qty}</div>
+        <div class="cart-item-opts">${o.opts}</div>
+        <div class="cart-item-footer">
+          <div class="cart-item-price">${fmt(o.price*o.qty)}</div>
+          <div class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</div>
+        </div>
+      </div>
+    </div>`).join('');
+  calcSummary();
+}
+
+function statusClass(s){return{wait:'s-wait',recv:'s-recv',cook:'s-cook',done:'s-done',deny:'s-deny'}[s]||'s-wait';}
+function statusLabel(s){return{wait:'⏳ Chờ xử lý',recv:'📬 Đã nhận',cook:'👨‍🍳 Đang chế biến',done:'✅ Đã phục vụ',deny:'❌ Từ chối'}[s]||s;}
+
+function cartQty(i, d){
+  cart[i].qty = Math.max(0,cart[i].qty+d);
+  if(!cart[i].qty) cart.splice(i,1);
+  updateCartBadge();
+  renderCart();
+}
+
+function calcSummary(){
+  const placed = placedOrders.reduce((a,o)=>a+o.price*o.qty,0);
+  const pending = cart.reduce((a,c)=>a+c.price*c.qty,0);
+  const sub = placed+pending;
+  const svc = Math.round(sub*0.05);
+  const vat = Math.round(sub*0.08);
+  const total = sub+svc+vat;
+  ['subtotal','orderSubtotal'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=fmt(sub);});
+  ['svcFee','orderSvc'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=fmt(svc);});
+  ['vatFee','orderVat'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=fmt(vat);});
+  ['cartTotal','orderTotal'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=fmt(total-discountVal);});
+  ['payTotalAmt','finalPayAmt'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=fmt(total-discountVal+tipAmt);});
+}
+
+function confirmOrder(){
+  cart.forEach(item=>{
+    placedOrders.push({...item,status:'wait',time:new Date().toTimeString().slice(0,5)});
+  });
+  cart=[];
+  updateCartBadge();
+  gotoScreen('order');
+}
+
+function renderOrder(){
+  const orderDiv = document.getElementById('orderItems');
+  const steps = ['wait','recv','cook','done'];
+  const labels = ['Chờ xử lý','Đã nhận','Đang chế biến','Đã phục vụ'];
+  orderDiv.innerHTML = placedOrders.map(o=>{
+    const cur = steps.indexOf(o.status);
+    return `<div class="cart-item" style="flex-direction:column;gap:6px">
+      <div style="display:flex;gap:10px;align-items:center">
+        <div class="cart-item-emoji">${o.emoji}</div>
+        <div style="flex:1">
+          <div class="cart-item-name">${o.name} × ${o.qty}</div>
+          <div style="font-size:11px;color:var(--text3)">${o.time}</div>
+        </div>
+        <div class="cart-item-price">${fmt(o.price*o.qty)}</div>
+      </div>
+      <div class="progress-steps">
+        ${steps.map((s,i)=>`
+          <div class="ps-step">
+            <div class="ps-dot ${i<cur?'done':i===cur?'active':''}"></div>
+            <div class="ps-label">${labels[i]}</div>
+            ${i<steps.length-1?`<div class="ps-line ${i<cur?'done':''}"></div>`:''}
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  calcSummary();
+}
+
+function renderPayment(){calcSummary();}
+
+function applyDiscount(){
+  const code = document.getElementById('discountCode').value.trim().toUpperCase();
+  const sub = placedOrders.reduce((a,o)=>a+o.price*o.qty,0)+cart.reduce((a,c)=>a+c.price*c.qty,0);
+  const badge = document.getElementById('discountBadge');
+  const row = document.getElementById('discountRow');
+  const amt = document.getElementById('discountAmt');
+  if(code==='CAMON'){discountVal=Math.round(sub*.1);badge.style.display='block';badge.textContent='✓ CAMON — Giảm 10%: -'+fmt(discountVal);row.style.display='flex';amt.textContent='-'+fmt(discountVal);calcSummary();}
+  else if(code==='GIAM50K'){discountVal=50000;badge.style.display='block';badge.textContent='✓ GIAM50K — Giảm 50.000đ';row.style.display='flex';amt.textContent='-'+fmt(discountVal);calcSummary();}
+  else{badge.style.display='block';badge.style.background='var(--red-bg)';badge.style.color='var(--red)';badge.textContent='✗ Mã không hợp lệ hoặc đã hết hạn';setTimeout(()=>{badge.style.display='none';badge.style.background='';badge.style.color='';},2000);}
+}
+
+function lookupMember(){
+  const phone = document.getElementById('memberPhone').value.trim();
+  const info = document.getElementById('memberInfo');
+  if(phone.length>=10){
+    info.style.display='block';
+    document.getElementById('memberName').textContent = phone==='0909123456'?'Nguyễn Văn A':'Khách hàng';
+    document.getElementById('memberPoints').textContent = phone==='0909123456'?'2.400':'850';
+  } else {alert('Vui lòng nhập đúng số điện thoại!');}
+}
+
+function showMemberBox(){
+  const mb = document.getElementById('memberBox');
+  mb.style.display = mb.style.display==='none'?'block':'none';
+}
+
+function selectPayMethod(type, el){
+  document.querySelectorAll('.pay-method').forEach(m=>{m.classList.remove('selected');m.querySelector('.pay-radio').innerHTML='';});
+  el.classList.add('selected');
+  el.querySelector('.pay-radio').innerHTML='<div style="width:8px;height:8px;background:var(--momo);border-radius:50%"></div>';
+  document.getElementById('qrBox').classList.toggle('show',type==='transfer');
+  document.getElementById('cardForm').classList.toggle('show',type==='card');
+}
+
+function selectTip(pct, el){
+  document.querySelectorAll('.tip-chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  const sub = placedOrders.reduce((a,o)=>a+o.price*o.qty,0);
+  const base = Math.round(sub*1.13);
+  const custom = document.getElementById('tipCustom');
+  if(pct===-1){custom.style.display='block';tipAmt=0;}
+  else{custom.style.display='none';tipAmt=pct===0?0:Math.round(base*pct/100);}
+  tipMode=pct;
+  calcSummary();
+}
+
+function updatePayTotal(){
+  const v = parseInt(document.getElementById('tipCustomAmt').value)||0;
+  tipAmt=v;
+  calcSummary();
+}
+
+function showWorkerPopup(){document.getElementById('workerOverlay').classList.add('open');}
+function closeWorkerPopup(e){if(e.target===document.getElementById('workerOverlay')) document.getElementById('workerOverlay').classList.remove('open');}
+function selWorker(el){document.querySelectorAll('.worker-opt').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');}
+function sendWorker(){
+  document.getElementById('workerOverlay').classList.remove('open');
+  const toast = document.createElement('div');
+  toast.textContent='✅ Đã gửi yêu cầu đến nhân viên!';
+  toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a7a3c;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:9999;animation:fadeIn .2s ease';
+  document.body.appendChild(toast);
+  setTimeout(()=>toast.remove(),2500);
+}
+function showReviewPopup(){document.getElementById('reviewOverlay').classList.add('open');}
+function closeReviewPopup(e){if(e.target===document.getElementById('reviewOverlay')) document.getElementById('reviewOverlay').classList.remove('open');}
+function rateStar(n){document.querySelectorAll('#starRow .star').forEach((s,i)=>s.classList.toggle('lit',i<n));}
+function submitReview(){document.getElementById('reviewOverlay').classList.remove('open');}
+function confirmPayment(){
+  document.getElementById('successOverlay').classList.add('open');
+}
+function openFinalReview(){
+  document.getElementById('successOverlay').classList.remove('open');
+  showReviewPopup();
+}
+
+renderMenuGrid();
+calcSummary();
+</script>
+</body>
+</html>
