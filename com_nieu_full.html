@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Cơm Niêu Ngon</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--P:#A50064;--PL:#c4006f;--G:#c9a84c;--GL:#e8c56a;--W:#fff;--BG:#fdf8f5;--T:#2d2d2d;--T2:#777;--BD:#e8e8e8;--R:12px;--SH:0 2px 14px rgba(0,0,0,.09)}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#ccc;display:flex;justify-content:center;min-height:100dvh}
+#app{position:relative;width:100%;max-width:420px;min-height:100dvh;background:var(--BG);overflow:hidden;box-shadow:0 0 40px rgba(0,0,0,.18)}
+.scr{position:absolute;inset:0;background:var(--BG);overflow-y:auto;overflow-x:hidden;padding-bottom:70px;opacity:0;pointer-events:none;transform:translateX(26px);transition:opacity .25s ease,transform .25s ease}
+.scr.act{opacity:1;pointer-events:all;transform:translateX(0)}
+
+/* HEADER */
+.hdr{background:linear-gradient(135deg,var(--P),var(--PL));color:#fff;padding:13px 14px 10px;position:sticky;top:0;z-index:10;box-shadow:0 2px 10px rgba(165,0,100,.3)}
+.hdr1{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.rname{font-size:14px;font-weight:800}
+.tbdg{background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:3px 11px;font-size:12px;font-weight:700}
+.sfrow{display:flex;gap:7px;align-items:center}
+.sw{flex:1;position:relative}
+.sw input{width:100%;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:7px 10px 7px 30px;color:#fff;font-size:12px;outline:none;font-family:inherit}
+.sw input::placeholder{color:rgba(255,255,255,.6)}
+.sico{position:absolute;left:9px;top:50%;transform:translateY(-50%);pointer-events:none;width:13px;height:13px;flex-shrink:0}
+.fsel{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:7px 9px;color:#fff;font-size:11px;outline:none;cursor:pointer;font-family:inherit;max-width:112px}
+.fsel option{color:var(--T);background:#fff}
+
+/* CAT TABS */
+.ctabs{display:flex;gap:5px;padding:9px 12px;overflow-x:auto;background:var(--W);border-bottom:1px solid var(--BD);position:sticky;top:63px;z-index:9;scrollbar-width:none}
+.ctabs::-webkit-scrollbar{display:none}
+.ctab{white-space:nowrap;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--BD);background:var(--W);color:var(--T2);transition:.15s;flex-shrink:0}
+.ctab.act{background:var(--P);color:#fff;border-color:var(--P)}
+
+/* MENU */
+.mc{padding:10px 10px 4px}
+.csec{font-size:11px;font-weight:800;color:var(--P);margin:12px 0 7px;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.5px}
+.csec::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(165,0,100,.25),transparent)}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:4px}
+.mcard{background:var(--W);border-radius:var(--R);overflow:hidden;box-shadow:var(--SH);cursor:pointer;transition:transform .15s}
+.mcard:active{transform:scale(.96)}
+.mcard.sold{pointer-events:none}
+.miw{position:relative;height:108px;overflow:hidden;background:#f5e6d3}
+.miw img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.mcard:not(.sold):hover .miw img{transform:scale(1.07)}
+.soo{position:absolute;inset:0;background:rgba(0,0,0,.52);display:flex;align-items:center;justify-content:center}
+.soo span{color:#fff;font-size:11px;font-weight:800;border:1.5px solid rgba(255,255,255,.75);padding:3px 9px;border-radius:20px}
+.bdg{position:absolute;top:5px;left:5px;font-size:9px;font-weight:800;padding:2px 6px;border-radius:10px;z-index:2}
+.bh{background:#ff4757;color:#fff}.bn{background:var(--G);color:#fff}
+.minfo{padding:7px 8px 8px}
+.mn{font-size:12px;font-weight:700;line-height:1.3;margin-bottom:2px}
+.md{font-size:10px;color:var(--T2);line-height:1.4;margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mb{display:flex;align-items:center;justify-content:space-between}
+.mp{font-size:13px;font-weight:800;color:var(--P)}
+.abtn{width:30px;height:30px;border-radius:50%;background:var(--P);color:#fff;border:none;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:300;box-shadow:0 2px 8px rgba(165,0,100,.4);transition:.13s;line-height:1;flex-shrink:0}
+.abtn:active{transform:scale(.84)}
+/* FALLBACK */
+.ifb{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ifb span{font-size:30px}.ifb small{font-size:9px;margin-top:3px;font-weight:700;text-align:center;padding:0 4px;opacity:.65}
+
+/* POPUP */
+.pov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:flex;align-items:center;justify-content:center;padding:12px;opacity:0;pointer-events:none;transition:opacity .23s}
+.pov.show{opacity:1;pointer-events:all}
+.pbox{background:var(--W);border-radius:18px;width:100%;max-width:394px;max-height:92dvh;overflow-y:auto;transform:scale(.87) translateY(22px);transition:.26s;scrollbar-width:none}
+.pbox::-webkit-scrollbar{display:none}
+.pov.show .pbox{transform:scale(1) translateY(0)}
+.dimw{position:relative}
+.dim{width:100%;height:185px;object-fit:cover;display:block;border-radius:18px 18px 0 0}
+.dimfb{width:100%;height:185px;border-radius:18px 18px 0 0;display:flex;align-items:center;justify-content:center;font-size:68px}
+.xbtn{position:absolute;top:9px;right:9px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5}
+.dc{padding:13px 15px 18px}
+.dbdgs{display:flex;gap:6px;margin-bottom:6px}
+.dname{font-size:17px;font-weight:800;line-height:1.3;margin-bottom:4px}
+.ddesc{font-size:12px;color:var(--T2);line-height:1.6;margin-bottom:5px}
+.ding{font-size:11px;color:#888;background:#faf5f0;border-radius:8px;padding:6px 10px;margin-bottom:12px;line-height:1.5}
+.ding b{color:var(--P)}
+.osec{margin-bottom:11px}
+.olbl{font-size:12px;font-weight:700;margin-bottom:6px}
+.ochips{display:flex;flex-wrap:wrap;gap:6px}
+.ochip{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--BD);background:var(--W);color:var(--T2);transition:.13s;user-select:none}
+.ochip.sel{border-color:var(--P);background:rgba(165,0,100,.08);color:var(--P)}
+.cbg{display:flex;flex-direction:column;gap:7px}
+.cbi{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:9px;cursor:pointer;border:1.5px solid var(--BD);transition:.13s;user-select:none}
+.cbi.chk{border-color:var(--P);background:rgba(165,0,100,.05)}
+.cbi input{accent-color:var(--P);width:15px;height:15px;cursor:pointer;flex-shrink:0}
+.cbilbl{font-size:12px;font-weight:600;flex:1}
+.cbipx{font-size:11px;color:var(--P);font-weight:700}
+.nta{width:100%;border:1.5px solid var(--BD);border-radius:9px;padding:8px 10px;font-size:12px;resize:none;outline:none;font-family:inherit;height:60px;color:var(--T)}
+.nta:focus{border-color:var(--P)}
+.qrow{display:flex;align-items:center;justify-content:space-between;margin:11px 0 2px}
+.qctrl{display:flex;align-items:center;gap:12px;background:#f4f4f4;border-radius:24px;padding:4px 9px}
+.qbtn{width:31px;height:31px;border-radius:50%;border:none;background:var(--P);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:300;line-height:1}
+.qnum{font-size:16px;font-weight:800;min-width:24px;text-align:center}
+.tprice{font-size:19px;font-weight:800;color:var(--P)}
+.acbtn{width:100%;padding:13px;background:linear-gradient(135deg,var(--P),var(--PL));color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:11px;letter-spacing:.2px;font-family:inherit}
+
+/* CART */
+.stl{font-size:13px;font-weight:800;color:var(--T);padding:10px 13px 7px;background:var(--W);border-bottom:1px solid var(--BD);display:flex;justify-content:space-between;align-items:center}
+.citem{background:var(--W);margin:7px 10px;border-radius:var(--R);padding:10px;box-shadow:var(--SH)}
+.cih{display:flex;gap:8px}
+.cimg{width:56px;height:56px;border-radius:8px;object-fit:cover;flex-shrink:0;background:#f5e6d3}
+.cimgfb{width:56px;height:56px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px}
+.cinf{flex:1;min-width:0}
+.ciname{font-size:13px;font-weight:700;margin-bottom:2px}
+.ciopts{font-size:10px;color:var(--T2);line-height:1.65}
+.ciprice{font-size:13px;font-weight:800;color:var(--P);margin-top:4px}
+.cacts{display:flex;justify-content:flex-end;gap:6px;margin-top:8px;border-top:1px solid var(--BD);padding-top:7px;align-items:center}
+.bsm{padding:5px 11px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:inherit}
+.bedit{background:rgba(165,0,100,.1);color:var(--P)}
+.bdel{background:#fdecea;color:#c62828}
+.cqctrl{display:flex;align-items:center;gap:7px}
+.cqbtn{width:25px;height:25px;border-radius:50%;border:1.5px solid var(--P);background:var(--W);color:var(--P);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;line-height:1}
+
+/* ORDER STATUS */
+.oitem{background:var(--W);margin:7px 10px;border-radius:var(--R);padding:10px;box-shadow:var(--SH)}
+.oih{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.oname{font-size:13px;font-weight:700}
+.oqty{font-size:11px;color:var(--T2);margin-top:2px}
+.ost{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0;margin-left:6px}
+.s1{background:#fff8e1;color:#e65100}.s2{background:#e3f2fd;color:#1565c0}
+.s3{background:#fff3e0;color:#bf360c}.s4{background:#e8f5e9;color:#2e7d32}
+.s5{background:#fdecea;color:#c62828}
+.rjnote{font-size:11px;color:#c62828;background:#fdecea;border-radius:6px;padding:4px 8px;margin-top:5px}
+.pbw{margin-top:8px}
+.psteps{display:flex;justify-content:space-between;margin-bottom:4px}
+.pstep{font-size:9px;color:var(--T2);flex:1;text-align:center}
+.pstep.dn{color:var(--P);font-weight:700}
+.ptrack{height:5px;background:#eee;border-radius:5px;overflow:hidden}
+.pfill{height:100%;background:linear-gradient(90deg,var(--P),var(--PL));border-radius:5px;transition:width 1.2s ease}
+
+/* SUMMARY */
+.sbar{background:var(--W);margin:7px 10px;border-radius:var(--R);padding:12px;box-shadow:var(--SH)}
+.srow{display:flex;justify-content:space-between;font-size:12px;color:var(--T2);padding:3px 0}
+.srow.disc{color:#2e7d32}.srow.tipr{color:#7a5a00}
+.srow.tot{font-size:15px;font-weight:800;color:var(--T);border-top:1.5px solid var(--BD);padding-top:8px;margin-top:5px}
+.srow.tot span:last-child{color:var(--P)}
+.sdiv{height:8px;background:#f0f0f0}
+.cfbtn{display:block;width:calc(100% - 20px);margin:7px 10px;padding:13px;background:linear-gradient(135deg,var(--P),var(--PL));color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;text-align:center;font-family:inherit}
+.amobtn{display:block;width:calc(100% - 20px);margin:5px 10px;padding:10px;background:var(--W);color:var(--P);border:2px solid var(--P);border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;text-align:center;font-family:inherit}
+.goldbtn{display:block;width:calc(100% - 20px);margin:7px 10px;padding:13px;background:linear-gradient(135deg,var(--G),var(--GL));color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;text-align:center;font-family:inherit}
+.empty{text-align:center;padding:44px 18px;color:var(--T2)}
+.empty .eico{font-size:52px;margin-bottom:11px}
+
+/* ORDER SCREEN */
+.actrow{display:flex;gap:8px;padding:12px 11px 10px;justify-content:center}
+.actbtn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 16px;background:var(--W);border-radius:var(--R);cursor:pointer;box-shadow:var(--SH);border:none;flex:1;max-width:120px;font-family:inherit}
+.actbtn svg{width:22px;height:22px;stroke:var(--P);fill:none;stroke-width:1.8}
+.actbtn span{font-size:10px;font-weight:700;color:var(--P)}
+.cpnsec{padding:10px 11px}
+.cpnrow{display:flex;gap:6px}
+.cpni{flex:1;border:1.5px solid var(--BD);border-radius:8px;padding:8px 11px;font-size:13px;outline:none;font-family:inherit;text-transform:uppercase}
+.cpni:focus{border-color:var(--P)}
+.cpnbtn{padding:8px 14px;background:var(--P);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.dtag{margin-top:6px;background:#fdf0f7;border:1px dashed var(--P);border-radius:7px;padding:5px 9px;font-size:11px;font-weight:700;color:var(--P);display:none}
+
+/* PAYMENT */
+.pmths{padding:11px 11px 4px}
+.pmth{border:2px solid var(--BD);border-radius:var(--R);padding:12px 13px;margin-bottom:9px;cursor:pointer;transition:.15s;background:var(--W);box-shadow:var(--SH)}
+.pmth.sel{border-color:var(--P);background:rgba(165,0,100,.03)}
+.pmth-hdr{display:flex;align-items:center;gap:10px}
+.radio{width:19px;height:19px;border-radius:50%;border:2px solid var(--BD);flex-shrink:0;transition:.15s;position:relative}
+.pmth.sel .radio{border-color:var(--P);background:var(--P)}
+.pmth.sel .radio::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#fff}
+.pmth-ico{font-size:19px}
+.pmth-name{font-size:13px;font-weight:700}
+.pmth-sub{font-size:11px;color:var(--T2);margin:3px 0 0 29px}
+.qrwrap{margin-top:12px;background:#f9f4f8;border-radius:10px;padding:13px;text-align:center;display:none}
+.qrbox{width:150px;height:150px;margin:0 auto 8px;border:2px solid var(--P);border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center}
+.cardopts{display:none;flex-direction:column;gap:7px;margin-top:11px}
+.cardopt{display:flex;align-items:flex-start;gap:9px;padding:9px 11px;border:1.5px solid var(--BD);border-radius:9px;cursor:pointer;transition:.15s;background:#fafafa}
+.cardopt.sel{border-color:var(--P);background:rgba(165,0,100,.04)}
+.cochk{width:17px;height:17px;border-radius:4px;border:2px solid var(--BD);flex-shrink:0;margin-top:1px;transition:.15s;display:flex;align-items:center;justify-content:center}
+.cardopt.sel .cochk{background:var(--P);border-color:var(--P)}
+.cardopt.sel .cochk::after{content:'✓';color:#fff;font-size:10px;font-weight:800}
+.colbl{font-size:12px;font-weight:700}
+.cosub{font-size:11px;color:var(--T2);margin-top:1px}
+.cardform{margin-top:9px;background:#fff;border-radius:9px;padding:11px;border:1.5px solid #f0e0ea;display:none}
+.cfd{margin-bottom:8px}.cfd:last-child{margin-bottom:0}
+.cfd label{font-size:11px;font-weight:700;color:var(--T2);display:block;margin-bottom:3px}
+.cfd input{width:100%;border:1.5px solid var(--BD);border-radius:7px;padding:8px 10px;font-size:13px;outline:none;font-family:inherit}
+.cfd input:focus{border-color:var(--P)}
+.cfd-row{display:flex;gap:7px}.cfd-row .cfd{flex:1}
+.onsitemsg{margin-top:9px;background:#e8f5e9;border-radius:8px;padding:9px 12px;font-size:12px;font-weight:700;color:#2e7d32;display:none;align-items:center;gap:6px}
+.tipsec{padding:4px 11px 8px}
+.tipttl{font-size:13px;font-weight:700;margin-bottom:8px;color:var(--T)}
+.tipchips{display:flex;gap:6px;flex-wrap:wrap}
+.tipchip{padding:6px 13px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--BD);background:var(--W);color:var(--T2);transition:.13s;user-select:none}
+.tipchip.sel{border-color:var(--G);background:rgba(201,168,76,.12);color:#7a5a00}
+.tipinpw{margin-top:8px;display:none}
+.tipinpw input{width:100%;border:1.5px solid var(--BD);border-radius:8px;padding:8px 11px;font-size:13px;outline:none;font-family:inherit}
+.tipinpw input:focus{border-color:var(--G)}
+.divhr{height:1px;background:var(--BD);margin:9px 11px}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--W);border-top:1px solid var(--BD);display:flex;z-index:100;box-shadow:0 -3px 12px rgba(0,0,0,.08)}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;padding:7px 2px 5px;cursor:pointer;position:relative}
+.ni svg{width:20px;height:20px;stroke:var(--T2);fill:none;stroke-width:1.8;transition:.18s}
+.ni span{font-size:9px;color:var(--T2);margin-top:2px;font-weight:500;transition:.18s}
+.ni.act svg{stroke:var(--P)}.ni.act span{color:var(--P);font-weight:700}
+.nbadge{position:absolute;top:4px;right:calc(50% - 20px);background:var(--P);color:#fff;font-size:9px;font-weight:800;border-radius:10px;min-width:15px;height:15px;display:none;align-items:center;justify-content:center;padding:0 3px}
+
+/* POPUP GENERIC */
+.spop{text-align:center;padding:26px 20px}
+.sico{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--P),var(--PL));display:flex;align-items:center;justify-content:center;margin:0 auto 13px;font-size:30px}
+.sttl{font-size:19px;font-weight:800;margin-bottom:7px;line-height:1.3}
+.spts{font-size:13px;font-weight:700;color:var(--P);background:rgba(165,0,100,.09);border-radius:8px;padding:7px 14px;display:inline-block;margin-bottom:11px}
+.ssub{font-size:13px;color:var(--T2);line-height:1.6;margin-bottom:16px}
+.pbtn{width:100%;padding:12px;background:var(--P);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:7px;font-family:inherit}
+.pbtn2{width:100%;padding:10px;background:#f2f2f2;color:var(--T2);border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.cdtimer{font-size:13px;color:var(--T2);margin-top:9px}
+.cdtimer span{font-weight:800;color:var(--P)}
+.rpop{padding:18px}
+.rpop-ttl{font-size:16px;font-weight:800;color:var(--P);margin-bottom:3px}
+.rpop-sub{font-size:12px;color:var(--T2);margin-bottom:11px}
+.stars{display:flex;gap:7px;justify-content:center;margin-bottom:12px}
+.star{font-size:32px;cursor:pointer;opacity:.2;transition:.15s;user-select:none}
+.star.act{opacity:1}
+.rtxt{width:100%;border:1.5px solid var(--BD);border-radius:8px;padding:9px 11px;font-size:13px;resize:none;height:75px;outline:none;font-family:inherit;margin-bottom:11px}
+.rtxt:focus{border-color:var(--P)}
+.gpop{padding:15px 16px 18px}
+.gpop-ttl{font-size:15px;font-weight:800;color:var(--P);margin-bottom:11px}
+.mcard-ui{background:linear-gradient(135deg,var(--P),var(--PL));border-radius:12px;padding:16px;text-align:center;color:#fff;display:none;margin-top:11px}
+.mpts{font-size:34px;font-weight:800;margin:5px 0}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) scale(.88);background:rgba(15,15,15,.87);color:#fff;padding:9px 20px;border-radius:22px;font-size:13px;font-weight:600;z-index:500;opacity:0;transition:.23s;pointer-events:none;white-space:nowrap;max-width:310px;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) scale(1)}
+</style>
+</head>
+<body>
+<div id="app">
+
+<div class="scr act" id="s-menu">
+  <div class="hdr">
+    <div class="hdr1"><span class="rname">🍚 Cơm Niêu Ngon – Ẩm thực Việt</span><span class="tbdg">Bàn 05</span></div>
+    <div class="sfrow">
+      <div class="sw">
+        <svg class="sico" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:9px;top:50%;transform:translateY(-50%);pointer-events:none;width:13px;height:13px">
+          <circle cx="11" cy="11" r="7"/><line x1="16" y1="16" x2="20" y2="20"/>
+        </svg>
+        <input id="si" placeholder="Tìm món ăn...">
+      </div>
+      <select class="fsel" id="fsel">
+        <option value="">Tất cả loại</option>
+        <option value="combo">Set Combo</option><option value="com">Món cơm</option>
+        <option value="ca">Món cá</option><option value="thit">Món thịt</option>
+        <option value="khac">Món khác</option><option value="rau">Món rau</option>
+        <option value="canh">Món canh</option><option value="nuoc">Nước uống</option>
+        <option value="trang">Tráng miệng</option>
+      </select>
+    </div>
+  </div>
+  <div class="ctabs" id="ctabs"></div>
+  <div class="mc" id="mc"></div>
+</div>
+
+<div class="scr" id="s-cart">
+  <div class="hdr"><div class="hdr1"><span class="rname">🛒 Giỏ hàng</span><span class="tbdg">Bàn 05</span></div></div>
+  <div id="cart-body"></div>
+</div>
+
+<div class="scr" id="s-order">
+  <div class="hdr"><div class="hdr1"><span class="rname">📋 Đơn hàng</span><span class="tbdg">Bàn 05</span></div></div>
+  <div id="order-body"></div>
+</div>
+
+<div class="scr" id="s-pay">
+  <div class="hdr"><div class="hdr1"><span class="rname">💳 Thanh toán</span><span class="tbdg">Bàn 05</span></div></div>
+  <div id="pay-body"></div>
+</div>
+
+<nav class="bnav">
+  <div class="ni act" id="n0" onclick="goTab('menu',0)">
+    <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/></svg><span>Thực đơn</span>
+  </div>
+  <div class="ni" id="n1" onclick="goTab('cart',1)">
+    <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    <span>Giỏ hàng</span><div class="nbadge" id="cbadge">0</div>
+  </div>
+  <div class="ni" id="n2" onclick="goTab('order',2)">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    <span>Đơn hàng</span>
+  </div>
+  <div class="ni" id="n3" onclick="goTab('pay',3)">
+    <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    <span>Thanh toán</span>
+  </div>
+</nav>
+
+<div class="pov" id="dpov"><div class="pbox" id="dbox"></div></div>
+<div class="pov" id="gpov"><div class="pbox" id="gbox"></div></div>
+<div class="toast" id="toast-el"></div>
+</div>
+
+<script>
+// ─── BASE URL ảnh thật từ comnieusaigon.com ───
+const B = 'https://bizweb.dktcdn.net/100/442/328/products/';
+
+const CATS=[{id:'all',lb:'Tất cả'},{id:'combo',lb:'Set Combo'},{id:'com',lb:'Món cơm'},{id:'ca',lb:'Món cá'},{id:'thit',lb:'Món thịt'},{id:'khac',lb:'Món khác'},{id:'rau',lb:'Món rau'},{id:'canh',lb:'Món canh'},{id:'nuoc',lb:'Nước uống'},{id:'trang',lb:'Tráng miệng'}];
+const CL={combo:'Set Combo',com:'Món cơm',ca:'Món cá',thit:'Món thịt',khac:'Món khác',rau:'Món rau',canh:'Món canh',nuoc:'Nước uống',trang:'Tráng miệng'};
+const FBC={combo:['#f4a261','#e76f51'],com:['#f9c74f','#f3722c'],ca:['#90e0ef','#0077b6'],thit:['#e9c46a','#c77c3c'],khac:['#f8961e','#e06c00'],rau:['#b7e4c7','#40916c'],canh:['#ade8f4','#0096c7'],nuoc:['#caf0f8','#457b9d'],trang:['#ffb3c6','#c9184a']};
+const FBE={combo:'🍱',com:'🍚',ca:'🐟',thit:'🥩',khac:'🍳',rau:'🥬',canh:'🍲',nuoc:'🥤',trang:'🍮'};
+const SIDES=[{id:'cp',n:'Cà pháo',p:15000},{id:'dc',n:'Dưa chua',p:15000},{id:'tol',n:'Trứng ốp la',p:20000}];
+const COUPONS={CAMON:{t:'pct',v:10},GIAM50K:{t:'fix',v:50000}};
+
+// ─── MENU DATA – ảnh thật từ comnieusaigon.com ───
+const MENU=[
+ // SET COMBO
+ {id:1,cat:'combo',name:'Set Cơm Niêu 2 Người',price:350000,badge:'hot',
+  desc:'Combo đủ đầy: niêu cơm đất, cá bông lau kho tộ, canh chua tôm, rau xào tỏi.',
+  ing:'Cơm niêu, cá bông lau, tôm, me, rau muống, dưa cải muối',
+  img:B+'com-nieu-sai-gon-kem-nieu.jpg?v=1721794266517',sold:false},
+ {id:2,cat:'combo',name:'Set Cơm Niêu Gia Đình 4 Người',price:680000,badge:'hot',
+  desc:'Set 4 người phong phú: 2 niêu cơm, gà hấp muối, cá kho tộ, canh chua, rau xào.',
+  ing:'Cơm niêu ×2, gà ta, cá bông lau, me, rau muống, canh chua cá',
+  img:B+'com-nieu-sai-gon.jpg?v=1721792050753',sold:false},
+ // MÓN CƠM
+ {id:3,cat:'com',name:'Cơm Niêu (kèm niêu)',price:50000,badge:'hot',
+  desc:'Cơm nấu trong niêu đất truyền thống, dẻo thơm, lớp cháy vàng giòn rụm đặc trưng.',
+  ing:'Gạo tám thơm, nước tinh khiết, muối hạt biển',
+  img:B+'com-nieu-sai-gon-kem-nieu.jpg?v=1721794266517',sold:false},
+ {id:4,cat:'com',name:'Cơm Đập (kèm niêu)',price:50000,badge:'new',
+  desc:'Lớp cơm đập vàng giòn bên ngoài, bên trong dẻo thơm, ăn kèm muối mè truyền thống.',
+  ing:'Gạo nếp-tẻ mix, mè rang vàng, muối tiêu, dầu ăn',
+  img:B+'com-dap-com-nieu-sai-gon.jpg?v=1721792160140',sold:false},
+ {id:5,cat:'com',name:'Cơm Rang Dưa Bò',price:188000,badge:'hot',
+  desc:'Cơm chiên xào cùng dưa cải muối và thịt bò tươi, đậm đà hương vị miền Nam.',
+  ing:'Cơm trắng, thịt bò thăn, dưa cải muối, hành tây, tỏi phi, trứng gà, dầu hào',
+  img:B+'com-rang-dua-bo-com-nieu-sai-gon.jpg?v=1721792191873',sold:false},
+ {id:6,cat:'com',name:'Cơm Chiên Cá Hồi',price:288000,badge:'new',
+  desc:'Cá hồi chiên vừa chín tới, da giòn vàng, thịt ngọt mềm, ăn kèm cơm chiên trứng thơm.',
+  ing:'Cá hồi Na Uy, cơm trắng, trứng gà, hành lá, tỏi, cà rốt, bắp non, dầu ăn',
+  img:B+'com-chien-ca-hoi-com-nieu-sai-gon.jpg?v=1721792176940',sold:false},
+ {id:7,cat:'com',name:'Cơm Tấm Sườn Bì Chả',price:118000,badge:'',
+  desc:'Cơm tấm sườn nướng thơm, bì heo giòn, chả trứng mềm, nước mắm chua ngọt đặc biệt.',
+  ing:'Cơm tấm, sườn heo nướng, bì lợn, chả trứng, dưa leo, cà chua, nước mắm pha',
+  img:B+'com-tam-suon-bi-cha-com-nieu-sai-gon.jpg?v=1721795428257',sold:false},
+ // MÓN CÁ
+ {id:8,cat:'ca',name:'Cá Bông Lau Kho Tộ',price:100000,badge:'hot',
+  desc:'Cá bông lau miền Tây kho tộ đất, nước kho sánh đậm đà, thơm mùi tiêu và gừng.',
+  ing:'Cá bông lau, nước mắm, đường thốt nốt, tiêu xay, tỏi, ớt, gừng, nước dừa',
+  img:B+'ca-bong-lau-kho-to-com-nieu-sai-gon.jpg?v=1721793199663',sold:false},
+ {id:9,cat:'ca',name:'Cá Bống Trứng Kho Tộ',price:148000,badge:'new',
+  desc:'Cá bống trứng béo ngậy kho trong tộ đất, nước kho sánh đặm, vị đậm đà khó quên.',
+  ing:'Cá bống trứng, nước mắm, đường thốt nốt, tiêu, tỏi, gừng tươi, ớt hiểm',
+  img:B+'ca-bong-trung-kho-to-com-nieu-sai-gon.jpg?v=1721793217650',sold:false},
+ {id:10,cat:'ca',name:'Cá Lò Cố Kho Nhà Quê',price:178000,badge:'',
+  desc:'Cá lò cố kho phong cách nhà quê miền Tây, đậm đà, ăn kèm dưa cải muối chua thanh.',
+  ing:'Cá lò cố, nước mắm, đường, riềng, nghệ tươi, ớt hiểm, hành tím, tóc tiên',
+  img:B+'ca-kho-nha-que-com-nieu-sai-gon.jpg?v=1721793233810',sold:false},
+ // MÓN THỊT
+ {id:11,cat:'thit',name:'Gà Hấp Muối',price:280000,badge:'hot',
+  desc:'Gà ta nguyên con hấp muối hạt truyền thống, thịt chắc ngọt, thơm lá chanh và sả.',
+  ing:'Gà ta, muối hạt thô, lá chanh tươi, sả cây, gừng già, rượu trắng',
+  img:B+'ga-hap-muoi-com-nieu-sai-gon.jpg?v=1721792519060',sold:false},
+ {id:12,cat:'thit',name:'Gà Quay Đông Dương',price:419000,badge:'hot',
+  desc:'Gà quay Đông Dương da vàng giòn rụm, thịt mềm ngọt, hương thơm ngũ vị đặc trưng.',
+  ing:'Gà ta, ngũ vị hương, mật ong, dầu mào, tỏi, sả, gừng tươi, lá chanh',
+  img:B+'ga-quay-dong-duong-com-nieu-sai-gon.jpg?v=1721792537628',sold:false},
+ {id:13,cat:'thit',name:'Thịt Heo Kho Tàu',price:138000,badge:'',
+  desc:'Thịt ba chỉ heo và trứng vịt kho trong nước dừa, mềm tan, nước kho sánh mặn ngọt.',
+  ing:'Thịt ba chỉ heo, trứng vịt, nước dừa tươi, nước mắm, đường thốt nốt, tiêu',
+  img:B+'thit-heo-kho-tau-com-nieu-sai-gon.jpg?v=1721793250540',sold:false},
+ // MÓN KHÁC
+ {id:14,cat:'khac',name:'Trứng Chiên Xù Nước Thịt Kho',price:47000,badge:'',
+  desc:'Trứng bọc bột chiên xù giòn, chan nước thịt kho mặn ngọt sánh béo, ăn kèm cơm nóng.',
+  ing:'Trứng gà, thịt heo xay, bột chiên xù, nước mắm, đường, tiêu, hành phi',
+  img:B+'trung-ran-nuoc-thit-kho-com-nieu-sai-gon.jpg?v=1721791400947',sold:true},
+ {id:15,cat:'khac',name:'Xíu Mại + Bánh Mì',price:116000,badge:'',
+  desc:'Viên xíu mại thịt heo hấp chín, chan sốt cà chua đậm đà, ăn kèm bánh mì nướng bơ.',
+  ing:'Thịt heo xay, trứng cút, cà chua, hành tây, tỏi, nước mắm, đường, bánh mì',
+  img:B+'xiu-mai-banh-mi-com-nieu-sai-gon.jpg?v=1721792367247',sold:false},
+ {id:16,cat:'khac',name:'Bún Chả',price:124000,badge:'hot',
+  desc:'Đặc sản Hà Nội bất hủ: bún tươi, chả nướng than hoa thơm, nước mắm chua ngọt.',
+  ing:'Bún tươi, thịt heo viên nướng, chả nướng than, nước mắm chua ngọt, tỏi ớt, rau thơm',
+  img:B+'bun-cha-com-nieu-sai-gon.jpg?v=1721794371387',sold:false},
+ // MÓN RAU
+ {id:17,cat:'rau',name:'Rau Muống Xào Tỏi',price:55000,badge:'',
+  desc:'Rau muống tươi non xào tỏi đập thơm nồng, giòn ngon xanh đẹp, ăn không ngấy.',
+  ing:'Rau muống non, tỏi đập, dầu ăn, nước mắm, muối, tiêu xay',
+  img:B+'rau-muong-xao-toi-com-nieu-sai-gon.jpg?v=1721792072741',sold:false},
+ {id:18,cat:'rau',name:'Rau Xào Thập Cẩm',price:85000,badge:'new',
+  desc:'Các loại rau củ tươi xào thập cẩm, giàu dinh dưỡng, thanh đạm ăn kèm cơm.',
+  ing:'Cải thảo, cà rốt, nấm đông cô, đậu hà lan, tỏi, dầu hào, dầu ăn',
+  img:B+'mon-xao-com-nieu-sai-gon.jpg?v=1721791891710',sold:false},
+ // MÓN CANH
+ {id:19,cat:'canh',name:'Canh Chua Cá Bông Lau',price:138000,badge:'hot',
+  desc:'Canh chua cá bông lau đặc trưng Nam Bộ, vị chua thanh từ me, ngọt tự nhiên từ cá tươi.',
+  ing:'Cá bông lau, me chua, cà chua, dứa, đậu bắp, giá đỗ, ngổ nước, bạc hà, ớt',
+  img:B+'canh-chua-ca-bong-lau-com-nieu-sai-gon.jpg?v=1721794183700',sold:false},
+ {id:20,cat:'canh',name:'Canh Tập Tàn Tôm',price:148000,badge:'',
+  desc:'Canh tập tàng đặc trưng miền Nam nấu tôm tươi, ngọt thanh, bổ dưỡng và thanh mát.',
+  ing:'Rau tập tàng, tôm sú tươi, hành lá, nước dùng xương, nước mắm, tiêu',
+  img:B+'canh-tap-tang-nau-tom-com-nieu-sai-gon.jpg?v=1721791947883',sold:false},
+ {id:21,cat:'canh',name:'Canh Thì Là Nghêu',price:148000,badge:'new',
+  desc:'Canh thì là nghêu tươi thanh mát, nghêu ngọt thịt, thì là xanh thơm, giải nhiệt ngày hè.',
+  ing:'Nghêu tươi, thì là xanh, cà chua, hành lá, nước dùng, nước mắm',
+  img:B+'canh-thi-la-ngheu-com-nieu-sai-gon.jpg?v=1721792250543',sold:false},
+ {id:22,cat:'canh',name:'Canh Cải Chua Sườn Non',price:200000,badge:'',
+  desc:'Canh cải muối chua nấu sườn non heo, vị chua thanh nhẹ, ngọt từ xương hầm kỹ.',
+  ing:'Cải muối, sườn non heo, cà chua tươi, gừng, hành lá, tiêu xay',
+  img:B+'canh-cai-chua-suon-non-com-nieu-sai-gon.jpg?v=1721792015687',sold:false},
+ // NƯỚC UỐNG
+ {id:23,cat:'nuoc',name:'Trà Tắc',price:29000,badge:'',
+  desc:'Trà đen pha tắc tươi, thêm đá viên – vị chua mát thanh tao, giải nhiệt hoàn hảo.',
+  ing:'Trà đen, tắc/quất tươi, đường, đá viên',
+  img:'CUSTOM_TRA_TAC',sold:false},
+ {id:24,cat:'nuoc',name:'Nước Suối',price:15000,badge:'',
+  desc:'Nước khoáng tinh khiết đóng chai, mát lạnh sảng khoái trong bữa ăn.',
+  ing:'Nước khoáng thiên nhiên tinh khiết',
+  img:'https://images.pexels.com/photos/416528/pexels-photo-416528.jpeg?auto=compress&cs=tinysrgb&w=400',sold:false},
+ // TRÁNG MIỆNG
+ {id:25,cat:'trang',name:'Chè Khúc Bạch',price:45000,badge:'new',
+  desc:'Thạch sữa trắng trong, hạnh nhân giòn, lychee ngọt, nước cốt dừa béo – thanh mát.',
+  ing:'Thạch sữa, hạnh nhân, lychee, đường, nước cốt dừa, đá bào, hạt lựu',
+  img:'https://images.pexels.com/photos/2638026/pexels-photo-2638026.jpeg?auto=compress&cs=tinysrgb&w=400',sold:false},
+ {id:26,cat:'trang',name:'Bánh Flan Caramen',price:35000,badge:'',
+  desc:'Bánh flan mềm mịn trứ danh, lớp caramen đắng nhẹ vàng óng, béo ngậy đúng vị.',
+  ing:'Trứng gà tươi, sữa tươi nguyên kem, đường, vani, caramen đun sôi',
+  img:'https://images.pexels.com/photos/3026804/pexels-photo-3026804.jpeg?auto=compress&cs=tinysrgb&w=400',sold:false},
+];
+
+// ─── STATE ───
+let cart=[], placed=[
+  {id:'d1',name:'Cơm Rang Dưa Bò',price:188000,qty:1,status:'rejected',rr:'hết món'},
+  {id:'d2',name:'Canh Chua Cá Bông Lau',price:138000,qty:1,status:'cooking'},
+];
+let curCat='all', discount=null, editId=null;
+let payM=null, cardO=null, tipM='none', tipAmt=0, cdTimer=null;
+
+// ─── HELPERS ───
+const fmt=n=>new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND'}).format(n);
+const $=id=>document.getElementById(id);
+
+function toast(msg,dur=2400){
+  const t=$('toast-el');t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),dur);
+}
+function goTab(n,i){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('act'));
+  $('s-'+n).classList.add('act');
+  document.querySelectorAll('.ni').forEach((e,j)=>e.classList.toggle('act',j===i));
+  if(n==='cart')renderCart();if(n==='order')renderOrder();if(n==='pay')renderPay();
+}
+function updBadge(){const b=$('cbadge'),t=cart.reduce((a,c)=>a+c.qty,0);b.style.display=t?'flex':'none';b.textContent=t;}
+function openPov(id){$(id).classList.add('show');}
+function closePov(id){$(id).classList.remove('show');}
+$('dpov').addEventListener('click',e=>{if(e.target===$('dpov'))closePov('dpov');});
+$('gpov').addEventListener('click',e=>{if(e.target===$('gpov'))closePov('gpov');});
+
+// FIX: dùng function toàn cục thay vì template literals lồng nhau để tránh lỗi SyntaxError
+function showGpop(html){$('gbox').innerHTML=html;openPov('gpov');}
+function closeGpov(){closePov('gpov');}
+
+// Fallback gradient + emoji
+function fbStyle(cat){const c=FBC[cat]||['#f0e0d0','#d4a574'];return 'background:linear-gradient(135deg,'+c[0]+','+c[1]+')';}
+function traTacSVG(){
+  return `<div style="width:100%;height:100%;background:linear-gradient(160deg,#d4ede0 0%,#a8d8b0 40%,#7bc495 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">
+    <svg viewBox="0 0 100 120" width="72" height="86" xmlns="http://www.w3.org/2000/svg">
+      <!-- glass body -->
+      <polygon points="18,20 82,20 74,108 26,108" fill="rgba(180,230,210,0.55)" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>
+      <!-- ice cubes -->
+      <rect x="28" y="30" width="16" height="14" rx="3" fill="rgba(255,255,255,0.75)" stroke="rgba(255,255,255,0.9)" stroke-width="1"/>
+      <rect x="52" y="35" width="14" height="12" rx="3" fill="rgba(255,255,255,0.65)" stroke="rgba(255,255,255,0.85)" stroke-width="1"/>
+      <rect x="38" y="44" width="18" height="13" rx="3" fill="rgba(255,255,255,0.7)" stroke="rgba(255,255,255,0.9)" stroke-width="1"/>
+      <!-- tea liquid -->
+      <polygon points="22,58 78,58 72,108 28,108" fill="rgba(200,140,60,0.65)"/>
+      <!-- kumquat slice -->
+      <circle cx="50" cy="22" r="10" fill="#f4a020" stroke="#e08000" stroke-width="1.5"/>
+      <circle cx="50" cy="22" r="7" fill="#f8c060" stroke="none"/>
+      <line x1="50" y1="13" x2="50" y2="31" stroke="#e08000" stroke-width="0.8" opacity="0.6"/>
+      <line x1="41" y1="22" x2="59" y2="22" stroke="#e08000" stroke-width="0.8" opacity="0.6"/>
+      <line x1="43.5" y1="15.5" x2="56.5" y2="28.5" stroke="#e08000" stroke-width="0.8" opacity="0.6"/>
+      <line x1="56.5" y1="15.5" x2="43.5" y2="28.5" stroke="#e08000" stroke-width="0.8" opacity="0.6"/>
+      <!-- straw -->
+      <rect x="68" y="12" width="4" height="70" rx="2" fill="#ff6b6b" opacity="0.85"/>
+      <!-- bubbles -->
+      <circle cx="32" cy="70" r="3" fill="rgba(255,255,255,0.4)"/>
+      <circle cx="58" cy="80" r="2" fill="rgba(255,255,255,0.35)"/>
+      <circle cx="44" cy="90" r="2.5" fill="rgba(255,255,255,0.3)"/>
+    </svg>
+    <div style="position:absolute;bottom:6px;left:0;right:0;text-align:center;font-size:9px;font-weight:700;color:rgba(30,90,50,0.85)">Trà Tắc</div>
+  </div>`;
+}
+
+function imgFb(el,cat,name){
+  const p=el.parentElement;
+  const keep=[...p.querySelectorAll('.bdg,.soo')].map(e=>e.outerHTML).join('');
+  p.innerHTML=keep+'<div class="ifb" style="'+fbStyle(cat)+'"><span>'+FBE[cat]+'</span><small>'+name+'</small></div>';
+}
+function imgFbDetail(el,cat){el.outerHTML='<div class="dimfb" style="'+fbStyle(cat)+'">'+FBE[cat]+'</div>';}
+function imgFbCart(el,cat){el.outerHTML='<div class="cimgfb" style="'+fbStyle(cat)+'">'+FBE[cat]+'</div>';}
+
+// ─── MENU ───
+(function init(){
+  $('ctabs').innerHTML=CATS.map(c=>'<div class="ctab'+(c.id==='all'?' act':'')+'" onclick="setCat(\''+c.id+'\')">'+c.lb+'</div>').join('');
+  renderMenu();
+  $('si').addEventListener('input',e=>{curCat='all';syncTabs(0);renderMenu(e.target.value,'');});
+  $('fsel').addEventListener('change',e=>{curCat='all';syncTabs(0);renderMenu('',e.target.value);});
+})();
+
+function syncTabs(i){document.querySelectorAll('.ctab').forEach((t,j)=>t.classList.toggle('act',j===i));}
+function setCat(id){curCat=id;syncTabs(CATS.findIndex(c=>c.id===id));$('si').value='';$('fsel').value='';renderMenu();}
+
+function renderMenu(search,fcat){
+  search=search||'';fcat=fcat||'';
+  const mc=$('mc');
+  let items=MENU;
+  if(fcat)items=items.filter(m=>m.cat===fcat);
+  else if(curCat!=='all')items=items.filter(m=>m.cat===curCat);
+  if(search)items=items.filter(m=>m.name.toLowerCase().includes(search.toLowerCase()));
+  if(!items.length){mc.innerHTML='<div class="empty"><div class="eico">🔍</div><p>Không tìm thấy món phù hợp</p></div>';return;}
+  const all=curCat==='all'&&!search&&!fcat;
+  let html='';
+  if(all){
+    ['combo','com','ca','thit','khac','rau','canh','nuoc','trang'].forEach(function(cat){
+      const g=items.filter(m=>m.cat===cat);
+      if(g.length)html+='<div class="csec">'+CL[cat]+'</div><div class="mgrid">'+g.map(mcard).join('')+'</div>';
+    });
+  } else html='<div class="mgrid">'+items.map(mcard).join('')+'</div>';
+  mc.innerHTML=html;
+}
+
+function mcard(m){
+  const b=m.badge==='hot'?'<div class="bdg bh">🔥 Bán chạy</div>':m.badge==='new'?'<div class="bdg bn">⭐ Đề xuất</div>':'';
+  const ns=m.name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+  const imgHtml = m.img==='CUSTOM_TRA_TAC'
+    ? traTacSVG()
+    : '<img src="'+m.img+'" alt="'+ns+'" loading="lazy" onerror="imgFb(this,\''+m.cat+'\',\''+ns+'\')">';
+  return '<div class="mcard'+(m.sold?' sold':'')+'" onclick="'+(m.sold?'':'openDetail('+m.id+')')+'">'+
+    '<div class="miw">'+b+ imgHtml +
+    (m.sold?'<div class="soo"><span>Hết món</span></div>':'')+
+    '</div><div class="minfo"><div class="mn">'+m.name+'</div><div class="md">'+m.desc+'</div>'+
+    '<div class="mb"><span class="mp">'+fmt(m.price)+'</span>'+
+    (m.sold?'':'<button class="abtn" onclick="event.stopPropagation();openDetail('+m.id+')">+</button>')+
+    '</div></div></div>';
+}
+
+// ─── DETAIL ───
+function openDetail(id,eid){
+  eid=eid||null;
+  const m=MENU.find(x=>x.id===id);if(!m)return;
+  editId=eid;
+  const ci=eid?cart.find(c=>c.cid==eid):null;
+  const o=ci?ci.opts:{spicy:'Bình thường',time:'Lên món ngay',sides:[],note:''};
+  const b=m.badge==='hot'?'<span class="bdg bh" style="position:static;display:inline-block">🔥 Bán chạy</span>':m.badge==='new'?'<span class="bdg bn" style="position:static;display:inline-block">⭐ Đề xuất</span>':'';
+  const spicyOpts=['Bình thường','Không cay','Cay ít','Cay nhiều'];
+  const timeOpts=['Lên món ngay','Lên món sau'];
+  let html='<div class="dimw">'+
+    '<img class="dim" src="'+m.img+'" alt="'+m.name+'" onerror="imgFbDetail(this,\''+m.cat+'\')">'+
+    '<button class="xbtn" onclick="closePov(\'dpov\')">✕</button></div>'+
+    '<div class="dc"><div class="dbdgs">'+b+'</div>'+
+    '<div class="dname">'+m.name+'</div>'+
+    '<div class="ddesc">'+m.desc+'</div>'+
+    '<div class="ding"><b>🧄 Thành phần:</b> '+m.ing+'</div>'+
+    '<div class="osec"><div class="olbl">🌶️ Mức độ cay</div><div class="ochips" id="sp">'+
+    spicyOpts.map(function(s){return '<div class="ochip'+(o.spicy===s?' sel':'')+'" onclick="pickChip(\'sp\',this)">'+s+'</div>';}).join('')+
+    '</div></div>'+
+    '<div class="osec"><div class="olbl">⏱️ Thời gian phục vụ</div><div class="ochips" id="tv">'+
+    timeOpts.map(function(s,i){return '<div class="ochip'+((o.time===s||(i===0&&!o.time))?' sel':'')+'" onclick="pickChip(\'tv\',this)">'+s+'</div>';}).join('')+
+    '</div></div>'+
+    '<div class="osec"><div class="olbl">🍽️ Món ăn kèm</div><div class="cbg">'+
+    SIDES.map(function(s){return '<div class="cbi'+(o.sides.includes(s.n)?' chk':'')+'" onclick="togCB(this)"><input type="checkbox" '+(o.sides.includes(s.n)?'checked':'')+'>'+
+    '<span class="cbilbl">'+s.n+'</span><span class="cbipx">+'+fmt(s.p)+'</span></div>';}).join('')+
+    '</div></div>'+
+    '<div class="osec"><div class="olbl">📝 Ghi chú cho bếp</div>'+
+    '<textarea class="nta" id="dnote" placeholder="Chín vừa, để nước mắm riêng...">'+(o.note||'')+'</textarea></div>'+
+    '<div class="qrow"><div class="qctrl">'+
+    '<button class="qbtn" onclick="adjQ(-1)">−</button>'+
+    '<span class="qnum" id="dq">'+(ci?ci.qty:1)+'</span>'+
+    '<button class="qbtn" onclick="adjQ(1)">+</button></div>'+
+    '<span class="tprice" id="dtot">'+fmt(calcDT(m,ci?ci.qty:1,o))+'</span></div>'+
+    '<button class="acbtn" onclick="doCart('+m.id+')">'+(eid?'💾 Lưu thay đổi':'🛒 Thêm vào giỏ hàng')+'</button></div>';
+  $('dbox').innerHTML=html;
+  window._dm=m;openPov('dpov');
+}
+
+function pickChip(g,el){$(g).querySelectorAll('.ochip').forEach(function(c){c.classList.remove('sel');});el.classList.add('sel');updDT();}
+function togCB(el){var cb=el.querySelector('input');setTimeout(function(){el.classList.toggle('chk',cb.checked);updDT();},0);}
+function adjQ(d){$('dq').textContent=Math.max(1,parseInt($('dq').textContent)+d);updDT();}
+function getOpts(){
+  var spicy=document.querySelector('#sp .ochip.sel');
+  var time=document.querySelector('#tv .ochip.sel');
+  return{
+    spicy:spicy?spicy.textContent:'Bình thường',
+    time:time?time.textContent:'Lên món ngay',
+    sides:[...document.querySelectorAll('.cbi.chk .cbilbl')].map(function(e){return e.textContent;}),
+    note:$('dnote')?$('dnote').value:''
+  };
+}
+function calcDT(m,qty,opts){
+  return (m.price+opts.sides.reduce(function(a,n){var s=SIDES.find(function(x){return x.n===n;});return a+(s?s.p:0);},0))*qty;
+}
+function updDT(){if(!window._dm)return;var el=$('dtot');if(el)el.textContent=fmt(calcDT(window._dm,parseInt($('dq').textContent),getOpts()));}
+
+function doCart(id){
+  var m=MENU.find(function(x){return x.id===id;});
+  var qty=parseInt($('dq').textContent),opts=getOpts();
+  if(editId){
+    var i=cart.findIndex(function(c){return c.cid==editId;});
+    if(i>=0)cart[i]=Object.assign({},cart[i],{qty:qty,opts:opts});
+    closePov('dpov');
+    // FIX: popup thành công sau lưu thay đổi – dùng function thay vì template literal lồng
+    showSuccessPopup('✅','Đã lưu thay đổi!','','Giá và thông tin món đã được cập nhật.','Đóng','closeGpovAndRenderCart');
+  } else {
+    cart.push({cid:Date.now()+'',iid:id,name:m.name,price:m.price,img:m.img,cat:m.cat,qty:qty,opts:opts});
+    toast('🛒 Đã thêm vào giỏ hàng!');
+    closePov('dpov');
+  }
+  updBadge();
+}
+
+function closeGpovAndRenderCart(){closePov('gpov');renderCart();}
+
+// FIX: tất cả popup dùng function chuyên biệt, KHÔNG dùng template literal lồng nhau
+function showSuccessPopup(ico,ttl,pts,sub,btn1,btn1fn,btn2,btn2fn){
+  var html='<div class="spop"><div class="sico">'+ico+'</div><div class="sttl">'+ttl+'</div>';
+  if(pts)html+='<div class="spts">'+pts+'</div>';
+  html+='<div class="ssub">'+sub+'</div>';
+  if(btn1)html+='<button class="pbtn" onclick="'+btn1fn+'()">'+btn1+'</button>';
+  if(btn2)html+='<button class="pbtn2" onclick="'+btn2fn+'()">'+btn2+'</button>';
+  html+='</div>';
+  showGpop(html);
+}
+
+// ─── CART ───
+function renderCart(){
+  var cb=$('cart-body');var html='';
+  html+='<div class="stl"><span>🧺 Món đang chọn ('+cart.length+')</span></div>';
+  if(!cart.length)html+='<div class="empty"><div class="eico">🛒</div><p>Chưa có món trong giỏ</p></div>';
+  else cart.forEach(function(ci){
+    var sp=ci.opts.sides.reduce(function(a,n){var s=SIDES.find(function(x){return x.n===n;});return a+(s?s.p:0);},0);
+    var tot=(ci.price+sp)*ci.qty;
+    var ostr=[ci.opts.spicy?'🌶️ '+ci.opts.spicy:'','⏱ '+ci.opts.time,ci.opts.sides.length?'🍽 '+ci.opts.sides.join(', '):'',ci.opts.note?'📝 '+ci.opts.note:''].filter(Boolean).join(' · ');
+    html+='<div class="citem"><div class="cih">'+
+      '<img class="cimg" src="'+ci.img+'" alt="'+ci.name+'" onerror="imgFbCart(this,\''+ci.cat+'\')">'+
+      '<div class="cinf"><div class="ciname">'+ci.name+'</div><div class="ciopts">'+ostr+'</div><div class="ciprice">'+fmt(tot)+'</div></div>'+
+      '</div><div class="cacts">'+
+      '<div class="cqctrl">'+
+      '<button class="cqbtn" onclick="adjCQ(\''+ci.cid+'\',-1)">−</button>'+
+      '<span style="font-size:13px;font-weight:700;min-width:20px;text-align:center">'+ci.qty+'</span>'+
+      '<button class="cqbtn" onclick="adjCQ(\''+ci.cid+'\',1)">+</button></div>'+
+      '<button class="bsm bedit" onclick="openDetail('+ci.iid+',\''+ci.cid+'\')">✏️ Sửa</button>'+
+      '<button class="bsm bdel" onclick="rmCart(\''+ci.cid+'\')">🗑 Xóa</button>'+
+      '</div></div>';
+  });
+
+  html+='<div class="sdiv"></div><div class="stl"><span>📦 Món đã đặt</span></div>';
+  var sm={waiting:'s1',received:'s2',cooking:'s3',served:'s4',rejected:'s5'};
+  var sl={waiting:'Chờ xử lý',received:'Đã nhận đơn',cooking:'Đang chế biến',served:'Đã phục vụ',rejected:'Từ chối'};
+  var pv={waiting:10,received:36,cooking:68,served:100,rejected:100};
+  var sd={waiting:0,received:1,cooking:2,served:3};
+  placed.forEach(function(o){
+    html+='<div class="oitem"><div class="oih"><div><div class="oname">'+o.name+'</div><div class="oqty">x'+o.qty+' · '+fmt(o.price*o.qty)+'</div></div><span class="ost '+sm[o.status]+'">'+sl[o.status]+'</span></div>'+
+    (o.status==='rejected'?'<div class="rjnote">⛔ Lý do: '+(o.rr||'hết món')+'</div>':'')+
+    (o.status!=='rejected'?'<div class="pbw"><div class="psteps">'+['Chờ','Nhận','Chế biến','Phục vụ'].map(function(s,i){return '<div class="pstep'+(i<=(sd[o.status]!=null?sd[o.status]:-1)?' dn':'')+'">' +s+'</div>';}).join('')+'</div>'+
+    '<div class="ptrack"><div class="pfill" id="pf-'+o.id+'" style="width:'+pv[o.status]+'%"></div></div></div>':'')+
+    '</div>';
+  });
+
+  var sub=cartSub(),vat=sub*.08,svc=sub*.05;
+  html+='<div class="sdiv"></div><div class="sbar">'+
+    '<div class="srow"><span>Tạm tính</span><span>'+fmt(sub)+'</span></div>'+
+    '<div class="srow"><span>VAT (8%)</span><span>'+fmt(vat)+'</span></div>'+
+    '<div class="srow"><span>Phí phục vụ (5%)</span><span>'+fmt(svc)+'</span></div>'+
+    '<div class="srow tot"><span>Cộng tạm tính</span><span>'+fmt(sub+vat+svc)+'</span></div></div>';
+  if(cart.length)html+='<button class="cfbtn" onclick="confirmOrder()">✅ Xác nhận đặt món</button>';
+  html+='<button class="amobtn" onclick="goTab(\'menu\',0)">+ Gọi thêm món</button>';
+  cb.innerHTML=html;
+}
+
+function cartSub(){
+  return cart.reduce(function(a,ci){var sp=ci.opts.sides.reduce(function(s2,n){var s=SIDES.find(function(x){return x.n===n;});return s2+(s?s.p:0);},0);return a+(ci.price+sp)*ci.qty;},0)
+       +placed.filter(function(o){return o.status!=='rejected';}).reduce(function(a,o){return a+o.price*o.qty;},0);
+}
+function adjCQ(cid,d){var i=cart.findIndex(function(c){return c.cid==cid;});if(i<0)return;cart[i].qty=Math.max(1,cart[i].qty+d);renderCart();updBadge();}
+function rmCart(cid){cart=cart.filter(function(c){return c.cid!=cid;});renderCart();updBadge();toast('🗑 Đã xóa món');}
+function confirmOrder(){
+  if(!cart.length)return;
+  cart.forEach(function(ci){placed.push({id:'o'+Date.now()+Math.random().toString(36).slice(2),name:ci.name,price:ci.price+ci.opts.sides.reduce(function(a,n){var s=SIDES.find(function(x){return x.n===n;});return a+(s?s.p:0);},0),qty:ci.qty,status:'waiting'});});
+  cart=[];updBadge();renderCart();toast('✅ Đặt món thành công!');
+}
+setInterval(function(){placed.forEach(function(o){if(o.status==='cooking'){var el=$('pf-'+o.id);if(el){var w=parseFloat(el.style.width||0);if(w<92)el.style.width=(w+.35)+'%';}}});},900);
+
+// ─── ORDER ───
+function renderOrder(){
+  var ob=$('order-body');
+  var sub=placed.filter(function(o){return o.status!=='rejected';}).reduce(function(a,o){return a+o.price*o.qty;},0);
+  var vat=sub*.08,svc=sub*.05,disc=discount?discount.amt:0,tot=Math.max(0,sub+vat+svc-disc);
+  var sm={waiting:'s1',received:'s2',cooking:'s3',served:'s4',rejected:'s5'};
+  var sl={waiting:'Chờ xử lý',received:'Đã nhận đơn',cooking:'Đang chế biến',served:'Đã phục vụ',rejected:'Từ chối'};
+  var html='<div class="actrow">'+
+    '<button class="actbtn" onclick="openStaff()"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.39 2 2 0 0 1 3.59 1.2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.37a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 14.92z"/></svg><span>Gọi nhân viên</span></button>'+
+    '<button class="actbtn" onclick="openReview()"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Đánh giá</span></button>'+
+    '<button class="actbtn" onclick="openMember()"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Thành viên</span></button>'+
+    '</div><div class="sdiv"></div>'+
+    '<div class="cpnsec"><div style="font-size:13px;font-weight:700;margin-bottom:8px">🎫 Mã giảm giá</div>'+
+    '<div class="cpnrow"><input class="cpni" id="cpni" placeholder="CAMON hoặc GIAM50K..."><button class="cpnbtn" onclick="applyCpn()">Áp dụng</button></div>'+
+    '<div class="dtag" id="dtag"></div></div>'+
+    '<div class="sdiv"></div><div class="stl"><span>🧾 Lịch sử đặt món</span></div>';
+  placed.forEach(function(o){
+    html+='<div class="oitem"><div class="oih"><div><div class="oname">'+o.name+'</div><div class="oqty">x'+o.qty+' · '+fmt(o.price*o.qty)+'</div></div><span class="ost '+sm[o.status]+'">'+sl[o.status]+'</span></div>'+
+      (o.status==='rejected'?'<div class="rjnote">⛔ Lý do: '+(o.rr||'hết món')+'</div>':'')+
+      '</div>';
+  });
+  html+='<div class="sdiv"></div><div class="sbar">'+
+    '<div class="srow"><span>Tạm tính</span><span>'+fmt(sub)+'</span></div>'+
+    '<div class="srow"><span>VAT (8%)</span><span>'+fmt(vat)+'</span></div>'+
+    '<div class="srow"><span>Phí phục vụ (5%)</span><span>'+fmt(svc)+'</span></div>'+
+    (disc?'<div class="srow disc"><span>Giảm giá ('+discount.code+')</span><span>-'+fmt(disc)+'</span></div>':'')+
+    '<div class="srow tot"><span>Tổng cộng</span><span>'+fmt(tot)+'</span></div></div>'+
+    '<button class="goldbtn" onclick="goTab(\'pay\',3)">💳 Gọi thanh toán</button>';
+  ob.innerHTML=html;
+  if(discount){var dt=$('dtag');if(dt){dt.style.display='block';dt.textContent=discount.desc;var ci=$('cpni');if(ci)ci.value=discount.code;}}
+}
+
+function applyCpn(){
+  var code=($('cpni').value||'').trim().toUpperCase(),c=COUPONS[code];
+  if(!c){toast('❌ Mã không hợp lệ');return;}
+  var sub=placed.filter(function(o){return o.status!=='rejected';}).reduce(function(a,o){return a+o.price*o.qty;},0);
+  var amt=c.t==='pct'?Math.round(sub*c.v/100):c.v;
+  discount={code:code,amt:amt,desc:'✅ Mã "'+code+'" – Giảm '+(c.t==='pct'?c.v+'%':fmt(c.v))};
+  renderOrder();toast('✅ Áp dụng mã thành công!');
+}
+
+// FIX: Tất cả popup ORDER dùng function riêng, không inline template literal
+function openStaff(){
+  var html='<div class="gpop"><div class="gpop-ttl">📞 Gọi nhân viên</div>'+
+    '<div style="font-size:12px;font-weight:700;color:var(--T2);margin-bottom:8px">Chọn lý do:</div>'+
+    '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:11px">';
+  ['Thêm giấy ăn / khăn ướt','Thêm nước chấm / gia vị','Dọn bàn','Thêm bát đĩa / đũa muỗng','Lý do khác'].forEach(function(r){
+    html+='<div class="cbi" onclick="this.classList.toggle(\'chk\');this.querySelector(\'input\').checked=this.classList.contains(\'chk\')"><input type="checkbox"><span class="cbilbl">'+r+'</span></div>';
+  });
+  html+='</div><div style="font-size:12px;font-weight:700;color:var(--T2);margin-bottom:5px">Ghi chú thêm:</div>'+
+    '<textarea class="nta" placeholder="Nhập ghi chú..."></textarea>'+
+    '<button class="acbtn" style="margin-top:11px" onclick="staffConfirm()">Gửi yêu cầu</button>'+
+    '<button class="pbtn2" style="margin-top:7px" onclick="closeGpov()">Hủy</button></div>';
+  showGpop(html);
+}
+function staffConfirm(){
+  // FIX: gọi function riêng thay vì inline
+  showSuccessPopup('✅','Đã gửi yêu cầu!','','Nhân viên sẽ đến bàn bạn ngay trong giây lát!','Đóng','closeGpov','','');
+}
+
+function openReview(){
+  var html='<div class="rpop"><div class="rpop-ttl">⭐ Đánh giá trải nghiệm</div>'+
+    '<div class="rpop-sub">Chia sẻ cảm nhận về món ăn và dịch vụ</div>'+
+    '<div class="stars">'+ [1,2,3,4,5].map(function(n){return '<span class="star" id="os'+n+'" onclick="rateStar(\'os\','+n+')">★</span>';}).join('') +'</div>'+
+    '<textarea class="rtxt" placeholder="Món ăn ngon, phục vụ nhiệt tình..."></textarea>'+
+    '<button class="pbtn" onclick="reviewConfirm()">Gửi đánh giá</button>'+
+    '<button class="pbtn2" onclick="closeGpov()">Hủy</button></div>';
+  showGpop(html);
+}
+function reviewConfirm(){
+  showSuccessPopup('🌟','Cảm ơn bạn!','','Đánh giá của bạn giúp chúng tôi phục vụ tốt hơn!','Đóng','closeGpov','','');
+}
+
+function rateStar(pfx,n){for(var i=1;i<=5;i++){var el=$(pfx+i);if(el)el.classList.toggle('act',i<=n);}}
+
+function openMember(){
+  var html='<div class="gpop"><div class="gpop-ttl">👤 Thành viên</div>'+
+    '<div style="display:flex;gap:6px;margin-bottom:4px">'+
+    '<input id="mph" class="cpni" style="text-transform:none" placeholder="Nhập SĐT (thử: 0909123456)...">'+
+    '<button class="cpnbtn" onclick="lookupM()">Tra cứu</button></div>'+
+    '<div id="mnotf" style="display:none;color:#c62828;font-size:12px;padding:6px 0">❌ Không tìm thấy</div>'+
+    '<div class="mcard-ui" id="mcu"><div style="font-size:11px;opacity:.8;margin-bottom:3px">Điểm tích lũy</div>'+
+    '<div class="mpts" id="mpts"></div>'+
+    '<div id="mnam" style="font-size:14px;font-weight:700;margin-top:3px"></div>'+
+    '<div id="mph2" style="font-size:12px;opacity:.8;margin-top:2px"></div></div>'+
+    '<button class="pbtn2" style="margin-top:13px" onclick="closeGpov()">Đóng</button></div>';
+  showGpop(html);
+}
+function lookupM(){
+  var ph=($('mph').value||'').trim();
+  if(ph==='0909123456'){$('mpts').textContent='2.400';$('mnam').textContent='Nguyễn Văn A';$('mph2').textContent=ph;$('mcu').style.display='block';$('mnotf').style.display='none';}
+  else if(ph){$('mcu').style.display='none';$('mnotf').style.display='block';}
+}
+
+// ─── PAYMENT ───
+function renderPay(){
+  var sub=placed.filter(function(o){return o.status!=='rejected';}).reduce(function(a,o){return a+o.price*o.qty;},0);
+  var vat=Math.round(sub*.08),svc=Math.round(sub*.05),disc=discount?discount.amt:0;
+  var base=Math.max(0,sub+vat+svc-disc);
+  var tipV=tipM==='5'?Math.round(base*.05):tipM==='10'?Math.round(base*.1):tipM==='other'?tipAmt:0;
+  var tot=base+tipV;
+  var pmList=[
+    {id:'cash',ico:'💵',name:'Tiền mặt',sub:'Vui lòng đợi nhân viên'},
+    {id:'transfer',ico:'📱',name:'Chuyển khoản / Ví điện tử',sub:'MoMo, ZaloPay, Tài khoản ngân hàng'},
+    {id:'card',ico:'💳',name:'Thẻ ngân hàng',sub:'Visa, MasterCard, JCB, thẻ Napas'}
+  ];
+  var html='<div class="pmths"><div style="font-size:13px;font-weight:700;margin-bottom:10px">💳 Phương thức thanh toán</div>';
+  pmList.forEach(function(pm){
+    html+='<div class="pmth'+(payM===pm.id?' sel':'')+'" onclick="pickPay(\''+pm.id+'\')">'+
+      '<div class="pmth-hdr"><div class="radio"></div><span class="pmth-ico">'+pm.ico+'</span>'+
+      '<div><div class="pmth-name">'+pm.name+'</div></div></div>'+
+      '<div class="pmth-sub">'+pm.sub+'</div>';
+    if(pm.id==='transfer'&&payM==='transfer'){
+      html+='<div class="qrwrap" style="display:block">'+
+        '<div class="qrbox"><svg viewBox="0 0 130 130" width="145" height="145">'+
+        '<rect x="8" y="8" width="38" height="38" fill="none" stroke="#A50064" stroke-width="5"/>'+
+        '<rect x="16" y="16" width="22" height="22" fill="#A50064"/>'+
+        '<rect x="84" y="8" width="38" height="38" fill="none" stroke="#A50064" stroke-width="5"/>'+
+        '<rect x="92" y="16" width="22" height="22" fill="#A50064"/>'+
+        '<rect x="8" y="84" width="38" height="38" fill="none" stroke="#A50064" stroke-width="5"/>'+
+        '<rect x="16" y="92" width="22" height="22" fill="#A50064"/>'+
+        '<rect x="56" y="8" width="10" height="10" fill="#A50064"/>'+
+        '<rect x="70" y="8" width="10" height="10" fill="#A50064"/>'+
+        '<rect x="56" y="56" width="10" height="10" fill="#A50064"/>'+
+        '<rect x="70" y="56" width="10" height="10" fill="#A50064"/>'+
+        '<rect x="84" y="56" width="10" height="10" fill="#A50064"/>'+
+        '<rect x="98" y="56" width="10" height="10" fill="#A50064"/>'+
+        '<rect x="112" y="56" width="10" height="10" fill="#A50064"/>'+
+        '<rect x="56" y="70" width="10" height="10" fill="#A50064"/>'+
+        '<rect x="84" y="70" width="10" height="10" fill="#A50064"/>'+
+        '<rect x="112" y="70" width="10" height="10" fill="#A50064"/>'+
+        '<rect x="56" y="84" width="10" height="10" fill="#A50064"/>'+
+        '<rect x="98" y="84" width="10" height="10" fill="#A50064"/>'+
+        '<rect x="70" y="84" width="10" height="10" fill="#A50064"/>'+
+        '<rect x="70" y="112" width="10" height="10" fill="#A50064"/>'+
+        '<rect x="84" y="112" width="10" height="10" fill="#A50064"/>'+
+        '</svg></div>'+
+        '<div style="font-size:13px;font-weight:800;color:var(--P)">Cơm Niêu Ngon</div>'+
+        '<div style="font-size:11px;color:var(--T2);margin-top:2px">STK: 9988 7766 5544 · MB Bank</div>'+
+        '<div style="font-size:15px;font-weight:800;color:var(--P);margin-top:6px">'+fmt(tot)+'</div></div>';
+    }
+    if(pm.id==='card'&&payM==='card'){
+      html+='<div class="cardopts" style="display:flex">'+
+        '<div class="cardopt'+(cardO==='online'?' sel':'')+'" onclick="pickCard(event,\'online\')"><div class="cochk"></div>'+
+        '<div><div class="colbl">💻 Thanh toán online</div><div class="cosub">Nhập thông tin để thanh toán online</div></div></div>';
+      if(cardO==='online'){
+        html+='<div class="cardform" style="display:block;margin:0">'+
+          '<div class="cfd"><label>Số thẻ</label><input placeholder="0000  0000  0000  0000" maxlength="22" oninput="fmtCard(this)"></div>'+
+          '<div class="cfd-row">'+
+          '<div class="cfd"><label>Ngày hết hạn</label><input placeholder="MM / YY" maxlength="7" oninput="fmtExp(this)"></div>'+
+          '<div class="cfd"><label>CVV/CVC</label><input type="password" placeholder="•••" maxlength="4"></div>'+
+          '</div></div>';
+      }
+      html+='<div class="cardopt'+(cardO==='onsite'?' sel':'')+'" onclick="pickCard(event,\'onsite\')"><div class="cochk"></div>'+
+        '<div><div class="colbl">🏧 Thanh toán tại chỗ</div><div class="cosub">Vui lòng đợi nhân viên đem máy đến</div></div></div>';
+      if(cardO==='onsite'){html+='<div class="onsitemsg" style="display:flex">✅ Nhân viên sẽ mang máy POS đến bàn bạn</div>';}
+      html+='</div>';
+    }
+    html+='</div>';
+  });
+  html+='</div><div class="divhr"></div>'+
+    '<div class="tipsec"><div class="tipttl">💝 Tiền tip (tùy chọn)</div>'+
+    '<div class="tipchips">'+
+    [{id:'none',lb:'Không boa'},{id:'5',lb:'5%'},{id:'10',lb:'10%'},{id:'other',lb:'Khác'}].map(function(t){
+      return '<div class="tipchip'+(tipM===t.id?' sel':'')+'" onclick="pickTip(\''+t.id+'\')">'+t.lb+'</div>';
+    }).join('')+'</div>'+
+    (tipM==='other'?'<div class="tipinpw" style="display:block"><input type="number" id="tci" placeholder="Nhập số tiền tip (VNĐ)..." value="'+(tipAmt||'')+'" oninput="updTip(this.value)"></div>':'')+
+    '</div><div class="divhr"></div>'+
+    '<div class="sbar" style="margin:7px 10px">'+
+    '<div style="font-size:13px;font-weight:700;margin-bottom:7px">🧾 Tổng kết</div>'+
+    '<div class="srow"><span>Tạm tính</span><span>'+fmt(sub)+'</span></div>'+
+    '<div class="srow"><span>VAT (8%)</span><span>'+fmt(vat)+'</span></div>'+
+    '<div class="srow"><span>Phí phục vụ (5%)</span><span>'+fmt(svc)+'</span></div>'+
+    (disc?'<div class="srow disc"><span>Giảm giá ('+discount.code+')</span><span>-'+fmt(disc)+'</span></div>':'')+
+    (tipV>0?'<div class="srow tipr"><span>Tiền tip</span><span>+'+fmt(tipV)+'</span></div>':'')+
+    '<div class="srow tot"><span>Tổng thanh toán</span><span>'+fmt(tot)+'</span></div></div>'+
+    '<button class="cfbtn" style="font-size:15px;padding:14px;margin-bottom:4px" onclick="confirmPay()">✅ Xác nhận thanh toán</button>';
+  $('pay-body').innerHTML=html;
+}
+
+function pickPay(m){payM=m;cardO=null;renderPay();}
+function pickCard(e,o){e.stopPropagation();cardO=cardO===o?null:o;renderPay();}
+function pickTip(m){tipM=m;tipAmt=0;renderPay();}
+function updTip(v){tipAmt=parseInt(v)||0;renderPay();}
+function fmtCard(el){var v=el.value.replace(/\D/g,'').slice(0,16);el.value=v.match(/.{1,4}/g)?v.match(/.{1,4}/g).join('  '):v;}
+function fmtExp(el){var v=el.value.replace(/\D/g,'');if(v.length>=3)v=v.slice(0,2)+' / '+v.slice(2,4);el.value=v;}
+
+function confirmPay(){
+  if(!payM){toast('⚠️ Vui lòng chọn phương thức thanh toán');return;}
+  showSuccessPopup('🎉','Thanh toán thành công!','✓ Đã thanh toán · Tích +108 điểm thành viên','Cảm ơn quý khách đã dùng bữa tại <strong>Cơm Niêu Ngon</strong> 🍚','⭐ Đánh giá trải nghiệm','showPayReview','Bỏ qua, về Thực đơn','skipToMenu');
+}
+function skipToMenu(){closeGpov();resetAll();}
+
+function showPayReview(){
+  var html='<div class="rpop"><div class="rpop-ttl">⭐ Đánh giá trải nghiệm</div>'+
+    '<div class="rpop-sub">Chia sẻ cảm nhận của bạn</div>'+
+    '<div class="stars">'+[1,2,3,4,5].map(function(n){return '<span class="star" id="ps'+n+'" onclick="rateStar(\'ps\','+n+')">★</span>';}).join('')+'</div>'+
+    '<textarea class="rtxt" placeholder="Món ăn ngon, phục vụ nhiệt tình..."></textarea>'+
+    '<button class="pbtn" onclick="showThanks()">Gửi đánh giá</button>'+
+    '<button class="pbtn2" onclick="skipToMenu()">Hủy, về Thực đơn</button></div>';
+  showGpop(html);
+}
+
+function showThanks(){
+  var s=5;
+  var html='<div class="spop"><div class="sico">🙏</div><div class="sttl">Cảm ơn bạn rất nhiều!</div>'+
+    '<div class="ssub">Hẹn gặp lại tại <strong>Cơm Niêu Ngon</strong>! 💐</div>'+
+    '<div class="cdtimer">Tự động về Thực đơn sau <span id="cdn">5</span> giây</div>'+
+    '<button class="pbtn" style="margin-top:13px" onclick="clearInterval(cdTimer);skipToMenu()">Về Thực đơn ngay</button></div>';
+  showGpop(html);
+  clearInterval(cdTimer);
+  cdTimer=setInterval(function(){
+    s--;var el=$('cdn');if(el)el.textContent=s;
+    if(s<=0){clearInterval(cdTimer);closeGpov();resetAll();}
+  },1000);
+}
+
+function resetAll(){
+  cart=[];placed=[
+    {id:'d1',name:'Cơm Rang Dưa Bò',price:188000,qty:1,status:'rejected',rr:'hết món'},
+    {id:'d2',name:'Canh Chua Cá Bông Lau',price:138000,qty:1,status:'cooking'}
+  ];
+  discount=null;payM=null;cardO=null;tipM='none';tipAmt=0;
+  updBadge();renderMenu();goTab('menu',0);
+}
+</script>
+</body>
+</html>
